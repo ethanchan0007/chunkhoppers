@@ -1,7 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ed5094d0-8727-4927-a2ea-ab850f0c5245" name="Default Changelist" comment="" />
+    <list default="true" id="ed5094d0-8727-4927-a2ea-ab850f0c5245" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/retrohopper/src/gui/GUIManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/net/retrohopper/src/utils/WorldUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Retrohoppers.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/retrohopper/src/HopperManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/retrohopper/src/HopperManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/retrohopper/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/retrohopper/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/retrohopper/src/commands/Retrohopper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/retrohopper/src/commands/Retrohopper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/retrohopper/src/listener/AllListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/net/retrohopper/src/listener/AllListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/net/retrohopper/src/utils/ConfigUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/Retrohoppers-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/Retrohoppers-1.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/net/retrohopper/src/HopperManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/net/retrohopper/src/HopperManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/net/retrohopper/src/Main$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/net/retrohopper/src/Main$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/net/retrohopper/src/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/net/retrohopper/src/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/net/retrohopper/src/commands/Retrohopper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/net/retrohopper/src/commands/Retrohopper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/net/retrohopper/src/listener/AllListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/net/retrohopper/src/listener/AllListener.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/net/retrohopper/src/serializable/SerializableItemStack.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/net/retrohopper/src/serializable/SerializableItemStack.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/net/retrohopper/src/utils/ChatUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/net/retrohopper/src/utils/ChatUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/net/retrohopper/src/utils/ConfigUtils.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,7 +42,25 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="importAutomatically" value="true" />
+      </MavenImportingSettings>
+    </option>
+  </component>
   <component name="ProjectId" id="1QLCqxzyTzxuFaDpTwbsIabTWyf" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+  </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="net.retrohopper.src.utils" />
@@ -36,6 +78,55 @@
       </list>
     </option>
   </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+      <module name="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType" factoryName="Kotlin script">
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+      <module name="" />
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -48,6 +139,19 @@
       <updated>1566309604779</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />

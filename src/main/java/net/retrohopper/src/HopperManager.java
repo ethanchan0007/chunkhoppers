@@ -1,6 +1,9 @@
 package net.retrohopper.src;
 
 import java.util.HashMap;
+
+import com.wasteofplastic.askyblock.ASkyBlock;
+import com.wasteofplastic.askyblock.ASkyBlockAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -24,9 +27,11 @@ public class HopperManager
 
     public static Location getLocationForChunk(Chunk chunk)
     {
-        for (Location l : hoppers.keySet()) {
+        for (Location l : hoppers.keySet())
+        {
             if (l == null){}
-            else if (l.getChunk().equals(chunk)) {
+            else if (l.getChunk().equals(chunk))
+            {
                 return l;
             }
 
@@ -48,7 +53,7 @@ public class HopperManager
     {
         for (Location l : hoppers.keySet()) {
             if (l.getChunk().equals(chunk)) {
-                return (Inventory)hoppers.get(l);
+                return hoppers.get(l);
             }
         }
         return null;

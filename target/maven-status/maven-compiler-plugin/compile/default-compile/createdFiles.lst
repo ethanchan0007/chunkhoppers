@@ -1,8 +1,9 @@
 net\retrohopper\src\serializable\SerializableItemStack.class
 net\retrohopper\src\commands\Retrohopper.class
+net\retrohopper\src\gui\GUIManager.class
 net\retrohopper\src\utils\ChatUtils.class
 net\retrohopper\src\Main.class
 net\retrohopper\src\HopperManager.class
 net\retrohopper\src\listener\AllListener.class
 net\retrohopper\src\Main$1.class
-net\retrohopper\src\utils\ConfigUtils.class
+net\retrohopper\src\utils\WorldUtils.class
