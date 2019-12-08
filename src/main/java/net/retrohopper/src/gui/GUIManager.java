@@ -1,6 +1,11 @@
 package net.retrohopper.src.gui;
 
+import net.retrohopper.src.Main;
+import net.retrohopper.src.nbt.NBT;
+import net.retrohopper.src.objects.Retrohopper;
 import net.retrohopper.src.utils.ChatUtils;
+import net.retrohopper.src.utils.MiscUtils;
+import net.retrohopper.src.utils.UMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -11,33 +16,34 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class GUIManager {
     private static GUIManager instance = new GUIManager();
 
-    public static GUIManager getInstance()
-    {
+    public static GUIManager getInstance() {
         return instance;
     }
-    public void openMainInventory(Player player, Location location)
-    {
-        Inventory gui = Bukkit.createInventory(player, 27,
-                ChatColor.translateAlternateColorCodes('&', "&3&lRetrohopper Controls"));
 
-        double x = location.getX();
-        double y = location.getY();
-        double z = location.getZ();
-        String coord = x + "," + y + "," + z;
+    public void openMainInventory(Player player, Location location) {
+        Inventory gui = Bukkit.createInventory(player, 27,
+                ChatColor.translateAlternateColorCodes('&', "&3&lRetrohopper Information"));
+
+        int x = (int) location.getX();
+        int y = (int) location.getY();
+        int z = (int) location.getZ();
+        String coord = x + ", " + y + ", " + z;
 
         ItemStack hopperInv = new ItemStack(Material.HOPPER, 1);
         ItemMeta hopperInvMeta = hopperInv.getItemMeta();
-        hopperInvMeta.setDisplayName(ChatUtils.chat("&f&lOpen Hopper Inventory"));
+        hopperInvMeta.setDisplayName(ChatUtils.chat("&f&lItems the hopper filters"));
         hopperInv.setItemMeta(hopperInvMeta);
 
         ItemStack hopperStats = new ItemStack(Material.BOOK, 1);
         ItemMeta hopperStatsMeta = hopperStats.getItemMeta();
         hopperStatsMeta.setDisplayName(ChatUtils.chat("&f&lHopper Stats"));
-        hopperStatsMeta.setLore(Arrays.asList(ChatUtils.chat("&bHopper Location: " + coord), ChatUtils.chat("&bHopper Level: 1")));
+        hopperStatsMeta.setLore(Arrays.asList(ChatUtils.chat("&bHopper Location: &f" + coord), ChatUtils.chat("&bHopper Level: &f" + MiscUtils.getInstance().getHopperFromLocation(location).getLevel()), ChatUtils.chat("&bItems transfered in 5 seconds: &f" + MiscUtils.getInstance().getHopperFromLocation(location).getMultiplier())));
         hopperStats.setItemMeta(hopperStatsMeta);
 
         gui.setItem(12, hopperInv);
@@ -66,5 +72,62 @@ public class GUIManager {
 
         player.openInventory(gui);
         return;
+    }
+
+    public void openItemFilterGUI(Player player, Retrohopper retrohopper) {
+        Inventory gui = Bukkit.createInventory(player, 54,
+                ChatColor.translateAlternateColorCodes('&', "&3&lRetrohopper Filter"));
+
+        int slot = 0;
+        ItemStack it;
+        LinkedHashMap<ItemStack, Boolean> filterList = (LinkedHashMap<ItemStack, Boolean>) retrohopper.getItemFilterList().clone();
+        for (ItemStack item : filterList.keySet()) {
+            it = UMaterial.match(item).getItemStack();
+            ItemMeta meta = it.getItemMeta();
+            if (filterList.get(item))
+            {
+                meta.setLore(Arrays.asList(ChatUtils.chat("&a&lEnabled")));
+            } else
+            {
+                meta.setLore(Arrays.asList(ChatUtils.chat("&c&lDisabled")));
+            }
+            it.setItemMeta(meta);
+            NBT nbt = NBT.get(it);
+            nbt.setInt("locx", (int) retrohopper.getLocation().getX());
+            nbt.setInt("locy", (int) retrohopper.getLocation().getY());
+            nbt.setInt("locz", (int) retrohopper.getLocation().getZ());
+
+            gui.setItem(slot, nbt.apply(it));
+            slot++;
+
+            meta.setLore(null);
+            item.setItemMeta(meta);
+
+        }
+
+        ItemStack lightfillerItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 9);
+        ItemMeta lightfillerItemMeta = lightfillerItem.getItemMeta();
+        lightfillerItemMeta.setDisplayName(" ");
+        lightfillerItem.setItemMeta(lightfillerItemMeta);
+
+        ItemStack darkFillerItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 11);
+        ItemMeta darkFillerItemMeta = darkFillerItem.getItemMeta();
+        darkFillerItemMeta.setDisplayName(" ");
+        darkFillerItem.setItemMeta(darkFillerItemMeta);
+
+        int i = 0;
+
+        for (ItemStack itemStack : gui.getContents()) {
+            if (itemStack == null)
+                i++;
+        }
+
+        for (int j = 0; j < i; j++) {
+            gui.setItem(gui.firstEmpty(), (gui.firstEmpty() % 2 == 1) ? lightfillerItem : darkFillerItem);
+        }
+
+        player.openInventory(gui);
+        return;
+
     }
 }

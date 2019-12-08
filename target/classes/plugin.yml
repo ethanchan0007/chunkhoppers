@@ -1,8 +1,9 @@
 name: Retrohopper
-version: 1.1
+version: 1.2
 main: net.retrohopper.src.Main
 authors: [WeChanDoIt, Techied]
 description: Adds a "Chunk Hopper" item that automatically collects all items in a chunk
+depend: [SuperiorSkyblock2, WildStacker]
 commands:
   retrohopper:
     description: Gives the specified player or command executor one or multiple RetroHoppers

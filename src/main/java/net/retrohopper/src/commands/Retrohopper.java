@@ -1,7 +1,5 @@
 package net.retrohopper.src.commands;
 
-import java.util.Arrays;
-
 import net.retrohopper.src.Main;
 import net.retrohopper.src.utils.ChatUtils;
 import org.bukkit.Bukkit;
@@ -14,29 +12,29 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
+
 public class Retrohopper
-        implements CommandExecutor
-{
+        implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if ((!(sender instanceof Player)) && (args.length != 2)) {
-            sender.sendMessage(ChatUtils.chat("&c[!] Only players may execute this command!"));
-            return true;
-        }
-
-        Player player = (Player) sender;
-
-        if (player.getInventory().firstEmpty() != -1) {
-            if (args.length != 1) {
-                player.getInventory().addItem(getHopperStack(1));
-                player.sendMessage(ChatUtils.chat("&3&l[!] &bYou were given 1x retrohoppers!"));
-            } else {
-                player.getInventory().addItem(getHopperStack(Integer.parseInt(args[0])));
-                player.sendMessage(ChatUtils.chat("&3&l[!] &bYou were given " + args[0] + "x retrohoppers!"));
+        String playername = "CONSOLE";
+        int amount = 1;
+        Player target = Bukkit.getPlayer(args[1]);
+        if (sender instanceof Player) playername = sender.getName();
+        if (args[0].equalsIgnoreCase("give") && (!(target == null))) {
+            if (args.length == 3) {
+                try {
+                    amount = Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    amount = 1;
+                }
             }
-        } else if (args.length != 1) {
-            player.getWorld().dropItemNaturally(player.getLocation(), getHopperStack(1));
-        } else {
-            player.getWorld().dropItemNaturally(player.getLocation(), getHopperStack(Integer.parseInt(args[0])));
+            target.getInventory().addItem(getHopperStack(amount));
+            sender.sendMessage(
+                    ChatUtils.chat("&3&l[!] &bYou gave " + target.getName() + " " + amount + "x &bretrohoppers!"));
+            target.sendMessage(
+                    ChatUtils.chat("&3&l[!] &b" + playername + " has given you " + amount + "x retrohoppers!"));
+            return true;
         }
         return true;
     }
