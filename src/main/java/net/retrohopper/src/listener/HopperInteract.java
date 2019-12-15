@@ -1,7 +1,6 @@
 package net.retrohopper.src.listener;
 
 import com.bgsoftware.superiorskyblock.api.SuperiorSkyblockAPI;
-import com.sun.javafx.css.converters.BooleanConverter;
 import net.retrohopper.src.Main;
 import net.retrohopper.src.gui.GUIManager;
 import net.retrohopper.src.nbt.NBT;
@@ -9,7 +8,6 @@ import net.retrohopper.src.objects.Retrohopper;
 import net.retrohopper.src.utils.ChatUtils;
 import net.retrohopper.src.utils.DataHandler;
 import net.retrohopper.src.utils.MiscUtils;
-import net.retrohopper.src.utils.UParticle;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -17,7 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -94,8 +91,8 @@ public class HopperInteract implements Listener {
                                 int i = 0;
 
                                 public void run() {
-                                    player.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 0, 1, 0.001, 0, 1);
-                                    if (i == 150) cancel();
+                                    player.getWorld().spawnParticle(Particle.BARRIER, particleLoc, 0, 1, 0.001, 0, 1);
+                                    if (i == 40) cancel();
                                     i++;
                                 }
                             }.runTaskTimer(Main.getPlugin(), 0, 5);
