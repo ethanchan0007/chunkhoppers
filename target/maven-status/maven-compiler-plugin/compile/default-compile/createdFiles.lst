@@ -13,7 +13,6 @@ net\retrohopper\src\listener\HopperInteract$1.class
 net\retrohopper\src\utils\DataHandler.class
 net\retrohopper\src\nbt\NBTList.class
 net\retrohopper\src\listener\ItemSpawnEvent.class
-net\retrohopper\src\utils\UParticle.class
 net\retrohopper\src\nbt\NBT.class
 net\retrohopper\src\objects\Retrohopper.class
 net\retrohopper\src\nbt\NBTBaseType.class

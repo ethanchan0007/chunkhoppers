@@ -6,7 +6,7 @@
 
     <groupId>net.retrohopper</groupId>
     <artifactId>Retrohopper</artifactId>
-    <version>1.2</version>
+    <version>1.2.2</version>
 
     <repositories>
         <repository>
