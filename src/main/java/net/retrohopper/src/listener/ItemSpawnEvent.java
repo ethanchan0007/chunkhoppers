@@ -28,16 +28,13 @@ public class ItemSpawnEvent implements Listener {
         Location itemLoc = event.getEntity().getLocation();
         Chunk chunk = itemLoc.getChunk();
 
-        if (WorldUtils.isWorldLoaded(itemLoc.getWorld()) && chunk != null) {
+        if (WorldUtils.isWorldLoaded(itemLoc.getWorld()) && chunk != null && MiscUtils.getInstance().getHopperFromChunk(chunk) != null) {
             Retrohopper retrohopper = MiscUtils.getInstance().getHopperFromChunk(chunk);
             Inventory inventory = retrohopper.getInventory();
             ItemStack item = WildStackerAPI.getStackedItem(event.getEntity()).getItemStack();
             if (inventory != null && !MiscUtils.isInventoryFull(inventory) && !event.isCancelled()) {
-                for (ItemStack i : retrohopper.getItemFilterList().keySet())
-                {
-                    Main.logger.info(Boolean.toString(i.getData().equals(item.getData())));
-                    if (i.getType() == item.getType() && retrohopper.getItemFilterList().get(i))
-                    {
+                for (ItemStack i : retrohopper.getItemFilterList().keySet()) {
+                    if (i.getType() == item.getType() && retrohopper.getItemFilterList().get(i)) {
                         inventory.addItem(event.getEntity().getItemStack());
                         event.getEntity().getLocation().getWorld().playEffect(itemLoc, Effect.SMOKE, 1);
                         event.getEntity().remove();

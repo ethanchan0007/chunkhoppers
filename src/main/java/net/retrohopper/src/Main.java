@@ -55,33 +55,37 @@ public class Main extends JavaPlugin {
                     for (Retrohopper retrohopper : dataHandler.getHoppers()) {
                         Location l = retrohopper.getLocation();
                         if (WorldUtils.isWorldLoaded(l.getWorld()) && l.getChunk() != null) {
-                            Hopper hopper = (Hopper) l.getBlock().getState().getData();
-                            if ((l.getBlock().getRelative(hopper.getFacing()).getState() instanceof InventoryHolder)) {
-                                InventoryHolder ih = (InventoryHolder) l.getBlock().getRelative(hopper.getFacing()).getState();
-                                if (ih != null) {
-                                    if (!(ih.getInventory().firstEmpty() == -1)) {
-                                        ArrayList<Integer> nonNull = new ArrayList();
-                                        Inventory inv = retrohopper.getInventory();
-                                        for (int i = 0; i < inv.getContents().length; i++) {
-                                            if (inv.getContents()[i] != null) nonNull.add(Integer.valueOf(i));
+                            try {
+                                Hopper hopper = (Hopper) l.getBlock().getState().getData();
 
-                                        }
-                                        if (nonNull.size() >= 2) {
-                                            ItemStack[] contents = inv.getContents();
-                                            for (int i = 0; i < 2*retrohopper.getMultiplier(); i ++)
-                                            {
-                                                ih.getInventory().addItem(contents[nonNull.get(i).intValue()]);
-                                                contents[nonNull.get(i).intValue()] = null;
+                                if ((l.getBlock().getRelative(hopper.getFacing()).getState() instanceof InventoryHolder)) {
+                                    InventoryHolder ih = (InventoryHolder) l.getBlock().getRelative(hopper.getFacing()).getState();
+                                    if (ih != null) {
+                                        if (!(ih.getInventory().firstEmpty() == -1)) {
+                                            ArrayList<Integer> nonNull = new ArrayList();
+                                            Inventory inv = retrohopper.getInventory();
+                                            for (int i = 0; i < inv.getContents().length; i++) {
+                                                if (inv.getContents()[i] != null) nonNull.add(Integer.valueOf(i));
+
                                             }
-                                            inv.setContents(contents);
-                                        } else if (nonNull.size() == 1) {
-                                            ItemStack[] contents = inv.getContents();
-                                            ih.getInventory().addItem(contents[nonNull.get(0).intValue()]);
-                                            contents[nonNull.get(0).intValue()] = null;
-                                            inv.setContents(contents);
+                                            if (nonNull.size() >= 2) {
+                                                ItemStack[] contents = inv.getContents();
+                                                for (int i = 0; i < retrohopper.getMultiplier(); i++) {
+                                                    ih.getInventory().addItem(contents[nonNull.get(i).intValue()]);
+                                                    contents[nonNull.get(i).intValue()] = null;
+                                                }
+                                                inv.setContents(contents);
+                                            } else if (nonNull.size() == 1) {
+                                                ItemStack[] contents = inv.getContents();
+                                                ih.getInventory().addItem(contents[nonNull.get(0).intValue()]);
+                                                contents[nonNull.get(0).intValue()] = null;
+                                                inv.setContents(contents);
+                                            }
                                         }
                                     }
                                 }
+                            } catch (ClassCastException e) {
+                                dataHandler.getHoppers().remove(retrohopper);
                             }
                         }
                         dataHandler.saveData();
@@ -121,8 +125,7 @@ public class Main extends JavaPlugin {
                 inventory.setContents(stack);
                 Location location = new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]));
                 logger.info(location.toString());
-                if (MiscUtils.getInstance().isUsedLocation(location))
-                {
+                if (MiscUtils.getInstance().isUsedLocation(location)) {
                     Retrohopper retrohopper = MiscUtils.getInstance().getHopperFromLocation(location);
                     retrohopper.setInventory(inventory);
                     finalizedCount++;
@@ -153,8 +156,7 @@ public class Main extends JavaPlugin {
         getLogger().info("Chunk Hopper disabled");
     }
 
-    public void saveHopperContents()
-    {
+    public void saveHopperContents() {
         try {
             HashMap<String, SerializableItemStack[]> hoppers = new HashMap();
             for (Retrohopper retrohopper : dataHandler.getHoppers()) {

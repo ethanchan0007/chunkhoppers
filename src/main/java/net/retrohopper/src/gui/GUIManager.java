@@ -28,26 +28,22 @@ public class GUIManager {
 
     public void openMainInventory(Player player, Location location) {
         Inventory gui = Bukkit.createInventory(player, 27,
-                ChatColor.translateAlternateColorCodes('&', "&3&lRetrohopper Information"));
+                ChatColor.translateAlternateColorCodes('&', "&8&nRetrohopper Information"));
 
         int x = (int) location.getX();
         int y = (int) location.getY();
         int z = (int) location.getZ();
         String coord = x + ", " + y + ", " + z;
 
-        ItemStack hopperInv = new ItemStack(Material.HOPPER, 1);
-        ItemMeta hopperInvMeta = hopperInv.getItemMeta();
-        hopperInvMeta.setDisplayName(ChatUtils.chat("&f&lItems the hopper filters"));
-        hopperInv.setItemMeta(hopperInvMeta);
+        ItemStack hopperInv = MiscUtils.getInstance().getItemStack(Material.HOPPER, 1, (byte) 0, ChatUtils.chat("&f&lFilter Options"), Arrays.asList(ChatUtils.chat("&7Change the item filter"), ChatUtils.chat("&7for this retrohopper")));
 
-        ItemStack hopperStats = new ItemStack(Material.BOOK, 1);
-        ItemMeta hopperStatsMeta = hopperStats.getItemMeta();
-        hopperStatsMeta.setDisplayName(ChatUtils.chat("&f&lHopper Stats"));
-        hopperStatsMeta.setLore(Arrays.asList(ChatUtils.chat("&bHopper Location: &f" + coord), ChatUtils.chat("&bHopper Level: &f" + MiscUtils.getInstance().getHopperFromLocation(location).getLevel()), ChatUtils.chat("&bItems transfered in 5 seconds: &f" + MiscUtils.getInstance().getHopperFromLocation(location).getMultiplier())));
-        hopperStats.setItemMeta(hopperStatsMeta);
+        ItemStack hopperStats = MiscUtils.getInstance().getItemStack(Material.KNOWLEDGE_BOOK, 1, (byte) 0, ChatUtils.chat("&f&lHopper Stats"), Arrays.asList(ChatUtils.chat("&7Hopper Location: &f&n" + coord), ChatUtils.chat("&7Hopper Level: &f&n" + MiscUtils.getInstance().getHopperFromLocation(location).getLevel()), ChatUtils.chat("&7Item Stacks transfered in 5 seconds: &f&n" + MiscUtils.getInstance().getHopperFromLocation(location).getMultiplier())));
+
+        ItemStack showChunkBorder = MiscUtils.getInstance().getItemStack(Material.BARRIER, 1, (byte) 0, ChatUtils.chat("&f&lShow Chunk Border"), Arrays.asList(ChatUtils.chat("&7Click this to show chunk borders for 5 seconds!")));
 
         gui.setItem(12, hopperInv);
         gui.setItem(14, hopperStats);
+        gui.setItem(22, showChunkBorder);
 
         ItemStack lightfillerItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 9);
         ItemMeta lightfillerItemMeta = lightfillerItem.getItemMeta();
@@ -76,7 +72,7 @@ public class GUIManager {
 
     public void openItemFilterGUI(Player player, Retrohopper retrohopper) {
         Inventory gui = Bukkit.createInventory(player, 54,
-                ChatColor.translateAlternateColorCodes('&', "&3&lRetrohopper Filter"));
+                ChatColor.translateAlternateColorCodes('&', "&8&nRetrohopper Filter"));
 
         int slot = 0;
         ItemStack it;

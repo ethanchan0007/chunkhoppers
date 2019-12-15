@@ -5,8 +5,10 @@ import net.retrohopper.src.objects.Retrohopper;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
@@ -106,14 +108,48 @@ public class MiscUtils {
     {
         List<Retrohopper> retrohopperList = dataHandler.getHoppers();
         if (retrohopperList.isEmpty()) return null;
-        for (Retrohopper hopper :  retrohopperList)
-        {
-            if (hopper.getLocation() != null && hopper.getLocation().equals(location))
-            {
+        for (Retrohopper hopper : retrohopperList) {
+            if (hopper.getLocation() != null && hopper.getLocation().equals(location)) {
                 return hopper;
             }
         }
         return null;
+    }
+
+    public ItemStack getItemStack(Material material, int amount, byte data, String name, List<String> lore) {
+        ItemStack itemStack = new ItemStack(material, amount, data);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName(name);
+        itemMeta.setLore(lore);
+        itemStack.setItemMeta(itemMeta);
+        return itemStack;
+    }
+
+    public List<Location> getHollowCube(Location corner1, Location corner2) {
+        List<Location> result = new ArrayList<Location>();
+        World world = corner1.getWorld();
+        double minX = Math.min(corner1.getX(), corner2.getX());
+        double minY = Math.min(corner1.getY(), corner2.getY());
+        double minZ = Math.min(corner1.getZ(), corner2.getZ());
+        double maxX = Math.max(corner1.getX(), corner2.getX());
+        double maxY = Math.max(corner1.getY(), corner2.getY());
+        double maxZ = Math.max(corner1.getZ(), corner2.getZ());
+
+        for (double x = minX; x <= maxX; x++) {
+            for (double y = minY; y <= maxY; y++) {
+                for (double z = minZ; z <= maxZ; z++) {
+                    int components = 0;
+                    if (x == minX || x == maxX) components++;
+                    if (y == minY || y == maxY) components++;
+                    if (z == minZ || z == maxZ) components++;
+                    if (components >= 2) {
+                        result.add(new Location(world, x, y, z));
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
 }

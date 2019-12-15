@@ -2,11 +2,9 @@ package net.retrohopper.src.objects;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Retrohopper
@@ -70,7 +68,12 @@ public class Retrohopper
     }
 
     public int getMultiplier() {
-        return ((level / 2) + 1);
+        int multiplier = 2, count = 0;
+        for (int i = 0; i < getLevel(); i++) {
+            multiplier += count;
+            count++;
+        }
+        return multiplier;
     }
 
     public int getLevel() {
