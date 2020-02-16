@@ -13,6 +13,7 @@ public class Retrohopper
     private Inventory inventory;
     private LinkedHashMap<ItemStack, Boolean> itemFilterList;
     private int level;
+    private boolean isTransferring;
     String id;
 
     public Retrohopper(Location loc, Inventory inventory, LinkedHashMap<ItemStack, Boolean> itemFilterList, String s, int level) {
@@ -21,6 +22,7 @@ public class Retrohopper
         this.itemFilterList = itemFilterList;
         this.id = s;
         this.level = level;
+        isTransferring = false;
     }
     public String toString()
     {
@@ -30,6 +32,16 @@ public class Retrohopper
                 + "Level: " + level + "\n"
                 + "ID: " + id;
         return message;
+    }
+
+    public boolean getTransferring()
+    {
+        return isTransferring;
+    }
+
+    public void setTransferring(boolean b)
+    {
+        isTransferring = b;
     }
 
     public void setLocation(Location location)
@@ -68,11 +80,8 @@ public class Retrohopper
     }
 
     public int getMultiplier() {
-        int multiplier = 2, count = 0;
-        for (int i = 0; i < getLevel(); i++) {
-            multiplier += count;
-            count++;
-        }
+        int multiplier = 9;
+        multiplier *= level;
         return multiplier;
     }
 
@@ -81,7 +90,8 @@ public class Retrohopper
     }
 
     public void setLevel(int level) {
-        this.level = level;
+        if (level >= 3) this.level = 3;
+        else this.level = level;
     }
 
     public String getID() {

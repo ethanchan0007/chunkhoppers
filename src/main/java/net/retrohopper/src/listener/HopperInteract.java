@@ -2,6 +2,7 @@ package net.retrohopper.src.listener;
 
 import com.bgsoftware.superiorskyblock.api.SuperiorSkyblockAPI;
 import net.retrohopper.src.Main;
+import net.retrohopper.src.commands.Retrochips;
 import net.retrohopper.src.gui.GUIManager;
 import net.retrohopper.src.nbt.NBT;
 import net.retrohopper.src.objects.Retrohopper;
@@ -23,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -38,10 +40,38 @@ public class HopperInteract implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
-        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && player.isSneaking() && !player.getItemInHand().getType().equals(Material.HOPPER)) {
-            if (MiscUtils.getInstance().isUsedLocation(block.getLocation())) {
+        ItemStack item = player.getItemInHand();
+        boolean change = false;
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && player.isSneaking() && !player.getItemInHand().getType().equals(Material.HOPPER) && MiscUtils.getInstance().isUsedLocation(block.getLocation())) {
+            Retrohopper retrohopper = MiscUtils.getInstance().getHopperFromLocation(block.getLocation());
+            if (Retrochips.isRetrochip(item))
+            {
+                if (!(retrohopper.getLevel() >= 3))
+                {
+                    change = true;
+                    if (retrohopper.getLevel() + 1 < 3)
+                    {
+                        retrohopper.setLevel(1 + retrohopper.getLevel());
+                        player.sendMessage(ChatUtils.chat("&c&l[!] &cUpgraded the retrohopper to level " + retrohopper.getLevel()));
+                    }
+                    else
+                    {
+                        retrohopper.setLevel(3);
+                        player.sendMessage(ChatUtils.chat("&cYou have maxed out the retrohopper's level."));
+                    }
+                }
+                if (change)
+                {
+                    item.setAmount(player.getItemInHand().getAmount() - 1);
+                    if (item.getAmount() <= 0) player.setItemInHand(new ItemStack(Material.AIR));
+                }
+
+                dataHandler.getHoppers().remove(retrohopper);
+                dataHandler.getHoppers().add(retrohopper);
+                dataHandler.saveData();
+            }
+            else if (MiscUtils.getInstance().isUsedLocation(block.getLocation()) && ((SuperiorSkyblockAPI.getIslandAt(event.getClickedBlock().getLocation()) != null && SuperiorSkyblockAPI.getIslandAt(event.getClickedBlock().getLocation()).equals(SuperiorSkyblockAPI.getPlayer((Player) event.getPlayer()).getIsland()) )|| event.getPlayer().isOp())) {
                 event.setCancelled(true);
-                Retrohopper retrohopper = MiscUtils.getInstance().getHopperFromLocation(block.getLocation());
                 GUIManager.getInstance().openMainInventory(player, retrohopper.getLocation());
             }
         }
@@ -49,7 +79,7 @@ public class HopperInteract implements Listener {
 
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
-        if (MiscUtils.getInstance().isUsedLocation(event.getInventory().getLocation())) {
+        if (MiscUtils.getInstance().isUsedLocation(event.getInventory().getLocation()) && ((SuperiorSkyblockAPI.getIslandAt(event.getInventory().getLocation()) != null && SuperiorSkyblockAPI.getIslandAt(event.getInventory().getLocation()).equals(SuperiorSkyblockAPI.getPlayer((Player) event.getPlayer()).getIsland()) )|| event.getPlayer().isOp())) {
             event.setCancelled(true);
             Retrohopper retrohopper = MiscUtils.getInstance().getHopperFromLocation(event.getInventory().getLocation());
             event.getPlayer().openInventory(retrohopper.getInventory());
@@ -58,31 +88,27 @@ public class HopperInteract implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getCurrentItem() == null || event.getClickedInventory() == null) return;
+        ItemStack item = event.getCurrentItem();
+        if (item == null || event.getClickedInventory() == null) return;
         if (event.getClick() == ClickType.CREATIVE) return;
         if (event.getClickedInventory().getTitle() != null && event.getClickedInventory().getTitle()
                 .equals(ChatColor.translateAlternateColorCodes('&', "&8&nRetrohopper Information")) || event.getClickedInventory().getTitle()
                 .equals(ChatColor.translateAlternateColorCodes('&', "&8&nRetrohopper Filter"))) {
             event.setCancelled(true);
-            if (event.getCurrentItem().hasItemMeta()) {
-                if (event.getCurrentItem().getItemMeta().hasDisplayName()) {
-                    if (event.getCurrentItem().getItemMeta().getDisplayName().equals(ChatUtils.chat("&f&lFilter Options"))) {
-                        Player player = (Player) event.getWhoClicked();
-                        Inventory inventory = event.getClickedInventory();
-                        ItemStack item = inventory.getItem(14);
-                        List<String> lore = item.getItemMeta().getLore();
-                        String[] locArray = lore.get(0).split(": ")[1].split(", ");
-                        Location location = new Location(SuperiorSkyblockAPI.getIslandsWorld(), Double.parseDouble(ChatColor.stripColor(locArray[0])), Double.parseDouble(ChatColor.stripColor(locArray[1])), Double.parseDouble(ChatColor.stripColor(locArray[2])));
-                        GUIManager.getInstance().openItemFilterGUI(player, MiscUtils.getInstance().getHopperFromLocation(location));
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().contains(ChatUtils.chat("&f&lShow Chunk Border"))) {
-                        final Player player = (Player) event.getWhoClicked();
-                        Inventory inventory = event.getClickedInventory();
-                        ItemStack item = inventory.getItem(14);
-                        List<String> lore = item.getItemMeta().getLore();
-                        String[] locArray = lore.get(0).split(": ")[1].split(", ");
-                        Location location = new Location(SuperiorSkyblockAPI.getIslandsWorld(), Double.parseDouble(ChatColor.stripColor(locArray[0])), Double.parseDouble(ChatColor.stripColor(locArray[1])), Double.parseDouble(ChatColor.stripColor(locArray[2])));
-                        Retrohopper retrohopper = MiscUtils.getInstance().getHopperFromLocation(location);
-                        Chunk chunk = retrohopper.getChunk();
+            if (item.hasItemMeta()) {
+                if (item.getItemMeta().hasDisplayName()) {
+                    final Player player = (Player) event.getWhoClicked();
+                    Inventory inventory = event.getClickedInventory();
+                    ItemStack i = inventory.getItem(14);
+                    List<String> lore = i.getItemMeta().getLore();
+                    String[] locArray = lore.get(0).split(": ")[1].split(", ");
+                    Location location = new Location(player.getWorld(), Double.parseDouble(ChatColor.stripColor(locArray[0])), Double.parseDouble(ChatColor.stripColor(locArray[1])), Double.parseDouble(ChatColor.stripColor(locArray[2])));
+
+                    if (item.getItemMeta().getDisplayName().equals(ChatUtils.chat("&f&lFilter Options"))) {
+                        Retrohopper hopper = MiscUtils.getInstance().getHopperFromLocation(location);
+                        GUIManager.getInstance().openItemFilterGUI(player, hopper);
+                    } else if (item.getItemMeta().getDisplayName().contains(ChatUtils.chat("&f&lShow Chunk Border"))) {
+                        Chunk chunk = location.getChunk();
                         Location corner1 = chunk.getBlock(0, 0, 0).getLocation();
                         Location corner2 = chunk.getBlock(0, 0, 0).getLocation().add(16, 255, 16);
                         List<Location> particleLocList = MiscUtils.getInstance().getHollowCube(corner1, corner2);
@@ -98,20 +124,19 @@ public class HopperInteract implements Listener {
                             }.runTaskTimer(Main.getPlugin(), 0, 5);
                         }
                     }
-                } else if (event.getCurrentItem().getItemMeta().hasLore()) {
-                    if (event.getCurrentItem().getItemMeta().getLore().contains(ChatUtils.chat("&a&lEnabled"))) {
-                        ItemStack i = event.getCurrentItem();
-                        NBT nbt = NBT.get(i);
-                        Location location = new Location(SuperiorSkyblockAPI.getIslandsWorld(), nbt.getInt("locx"), nbt.getInt("locy"), nbt.getInt("locz"));
+                } else if (item.getItemMeta().hasLore()) {
+                    if (item.getItemMeta().getLore().contains(ChatUtils.chat("&a&lEnabled"))) {
+                        NBT nbt = NBT.get(item);
+                        Location location = new Location(Bukkit.getWorld(nbt.getString("world")), nbt.getInt("locx"), nbt.getInt("locy"), nbt.getInt("locz"));
                         Retrohopper retrohopper = MiscUtils.getInstance().getHopperFromLocation(location);
                         LinkedHashMap<ItemStack, Boolean> filterList = retrohopper.getItemFilterList();
                         ItemMeta meta;
-                        for (ItemStack item : filterList.keySet()) {
-                            if (item.getType().equals(i.getType())) {
-                                filterList.put(item, false);
-                                meta = item.getItemMeta();
+                        for (ItemStack f : filterList.keySet()) {
+                            if (f.getType().equals(item.getType())) {
+                                filterList.put(f, false);
+                                meta = f.getItemMeta();
                                 meta.setLore(null);
-                                item.setItemMeta(meta);
+                                f.setItemMeta(meta);
 
                             }
                         }
@@ -121,19 +146,19 @@ public class HopperInteract implements Listener {
                         }
                         dataHandler.saveData();
                         GUIManager.getInstance().openItemFilterGUI((Player) event.getWhoClicked(), retrohopper);
-                    } else if (event.getCurrentItem().getItemMeta().getLore().contains(ChatUtils.chat("&c&lDisabled"))) {
-                        ItemStack i = event.getCurrentItem();
-                        NBT nbt = NBT.get(i);
-                        Location location = new Location(SuperiorSkyblockAPI.getIslandsWorld(), nbt.getInt("locx"), nbt.getInt("locy"), nbt.getInt("locz"));
+                    } else if (item.getItemMeta().getLore().contains(ChatUtils.chat("&c&lDisabled"))) {
+                        NBT nbt = NBT.get(item);
+                        int page = nbt.getInt("page");
+                        Location location = new Location(Bukkit.getWorld(nbt.getString("world")), nbt.getInt("locx"), nbt.getInt("locy"), nbt.getInt("locz"));
                         Retrohopper retrohopper = MiscUtils.getInstance().getHopperFromLocation(location);
                         LinkedHashMap<ItemStack, Boolean> filterList = retrohopper.getItemFilterList();
                         ItemMeta meta;
-                        for (ItemStack item : filterList.keySet()) {
-                            if (item.getType().equals(i.getType())) {
-                                meta = item.getItemMeta();
+                        for (ItemStack j : filterList.keySet()) {
+                            if (j.getType().equals(item.getType())) {
+                                meta = j.getItemMeta();
                                 meta.setLore(null);
-                                item.setItemMeta(meta);
-                                filterList.put(item, true);
+                                j.setItemMeta(meta);
+                                filterList.put(j, true);
 
                             }
                         }

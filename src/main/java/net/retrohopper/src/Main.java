@@ -1,24 +1,21 @@
 package net.retrohopper.src;
 
 import com.bgsoftware.superiorskyblock.api.SuperiorSkyblockAPI;
+import net.retrohopper.src.commands.Chunk;
+import net.retrohopper.src.commands.Retrochips;
 import net.retrohopper.src.listener.*;
 import net.retrohopper.src.objects.Retrohopper;
 import net.retrohopper.src.serializable.SerializableItemStack;
 import net.retrohopper.src.utils.ChatUtils;
 import net.retrohopper.src.utils.DataHandler;
 import net.retrohopper.src.utils.MiscUtils;
-import net.retrohopper.src.utils.WorldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Hopper;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TimerTask;
 import java.util.logging.Logger;
@@ -34,6 +31,7 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         logger = getLogger();
+
         if (!getServer().getWorlds().contains(SuperiorSkyblockAPI.getIslandsWorld()))
             getServer().getWorlds().add(SuperiorSkyblockAPI.getIslandsWorld());
 
@@ -42,65 +40,15 @@ public class Main extends JavaPlugin {
         loadEvents();
         loadCommands();
 
-        hopperTimer();
-
         getLogger().info("Chunk Hopper enabled");
-    }
-
-    public void hopperTimer() {
-        new BukkitRunnable() {
-
-            public void run() {
-                if (!dataHandler.getHoppers().isEmpty()) {
-                    for (Retrohopper retrohopper : dataHandler.getHoppers()) {
-                        Location l = retrohopper.getLocation();
-                        if (WorldUtils.isWorldLoaded(l.getWorld()) && l.getChunk() != null) {
-                            try {
-                                Hopper hopper = (Hopper) l.getBlock().getState().getData();
-
-                                if ((l.getBlock().getRelative(hopper.getFacing()).getState() instanceof InventoryHolder)) {
-                                    InventoryHolder ih = (InventoryHolder) l.getBlock().getRelative(hopper.getFacing()).getState();
-                                    if (ih != null) {
-                                        if (!(ih.getInventory().firstEmpty() == -1)) {
-                                            ArrayList<Integer> nonNull = new ArrayList();
-                                            Inventory inv = retrohopper.getInventory();
-                                            for (int i = 0; i < inv.getContents().length; i++) {
-                                                if (inv.getContents()[i] != null) nonNull.add(Integer.valueOf(i));
-
-                                            }
-                                            if (nonNull.size() >= 2) {
-                                                ItemStack[] contents = inv.getContents();
-                                                for (int i = 0; i < retrohopper.getMultiplier(); i++) {
-                                                    ih.getInventory().addItem(contents[nonNull.get(i).intValue()]);
-                                                    contents[nonNull.get(i).intValue()] = null;
-                                                }
-                                                inv.setContents(contents);
-                                            } else if (nonNull.size() == 1) {
-                                                ItemStack[] contents = inv.getContents();
-                                                ih.getInventory().addItem(contents[nonNull.get(0).intValue()]);
-                                                contents[nonNull.get(0).intValue()] = null;
-                                                inv.setContents(contents);
-                                            }
-                                        }
-                                    }
-                                }
-                            } catch (ClassCastException e) {
-                                dataHandler.getHoppers().remove(retrohopper);
-                            }
-                        }
-                        dataHandler.saveData();
-                    }
-                }
-            }
-        }.runTaskTimer(plugin, 0L, 100L);
     }
 
     public void loadInventories() {
         int finalizedCount = 0;
-        if (new File("plugins/chunkHoppers.ser").exists()) {
+        if (new File("plugins/Retrohopper/chunkHoppers.ser").exists()) {
             ObjectInputStream ois;
             try {
-                FileInputStream fis = new FileInputStream("plugins/chunkHoppers.ser");
+                FileInputStream fis = new FileInputStream("plugins/Retrohopper/chunkHoppers.ser");
 
                 ois = new ObjectInputStream(fis);
                 hoppers = (HashMap) ois.readObject();
@@ -124,7 +72,6 @@ public class Main extends JavaPlugin {
                 }
                 inventory.setContents(stack);
                 Location location = new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]));
-                logger.info(location.toString());
                 if (MiscUtils.getInstance().isUsedLocation(location)) {
                     Retrohopper retrohopper = MiscUtils.getInstance().getHopperFromLocation(location);
                     retrohopper.setInventory(inventory);
@@ -132,13 +79,14 @@ public class Main extends JavaPlugin {
                 }
             }
             getLogger().info("Got " + finalizedCount + " hoppers!");
-            //Retrohopper.setHoppers(finalized);
             getLogger().info("Successfully loaded (deserialized) chunkHoppers.ser");
         }
     }
 
     public void loadCommands() {
         getCommand("retrohopper").setExecutor(new net.retrohopper.src.commands.Retrohopper());
+        getCommand("chunk").setExecutor(new Chunk());
+        getCommand("retrochip").setExecutor(new Retrochips());
     }
 
     public void loadEvents() {
@@ -171,7 +119,7 @@ public class Main extends JavaPlugin {
                 }
                 hoppers.put(loc.getWorld().getName() + ":" + loc.getX() + ":" + loc.getY() + ":" + loc.getZ(), stacks);
             }
-            FileOutputStream fos = new FileOutputStream("plugins/chunkHoppers.ser");
+            FileOutputStream fos = new FileOutputStream("plugins/Retrohopper/chunkHoppers.ser");
 
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(hoppers);

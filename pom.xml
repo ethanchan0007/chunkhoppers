@@ -6,17 +6,12 @@
 
     <groupId>net.retrohopper</groupId>
     <artifactId>Retrohopper</artifactId>
-    <version>1.2.2</version>
+    <version>1.4</version>
 
     <repositories>
         <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>bintray-tastybento-maven-repo</id>
-            <name>bintray</name>
-            <url>http://dl.bintray.com/tastybento/maven-repo</url>
         </repository>
         <repository>
             <id>jitpack.io</id>

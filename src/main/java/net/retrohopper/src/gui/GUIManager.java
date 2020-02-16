@@ -1,6 +1,5 @@
 package net.retrohopper.src.gui;
 
-import net.retrohopper.src.Main;
 import net.retrohopper.src.nbt.NBT;
 import net.retrohopper.src.objects.Retrohopper;
 import net.retrohopper.src.utils.ChatUtils;
@@ -15,13 +14,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class GUIManager {
     private static GUIManager instance = new GUIManager();
-
     public static GUIManager getInstance() {
         return instance;
     }
@@ -35,11 +34,14 @@ public class GUIManager {
         int z = (int) location.getZ();
         String coord = x + ", " + y + ", " + z;
 
-        ItemStack hopperInv = MiscUtils.getInstance().getItemStack(Material.HOPPER, 1, (byte) 0, ChatUtils.chat("&f&lFilter Options"), Arrays.asList(ChatUtils.chat("&7Change the item filter"), ChatUtils.chat("&7for this retrohopper")));
+        int multiplier = MiscUtils.getInstance().getHopperFromLocation(location).getMultiplier();
+        List<String> upgradeLore;
+        ItemStack hopperInv = MiscUtils.getInstance().getItemStack(UMaterial.CHEST.getMaterial(), 1, (byte) 0, ChatUtils.chat("&f&lFilter Options"), Arrays.asList(ChatUtils.chat("&7Change the item filter"), ChatUtils.chat("&7for this retrohopper")));
 
-        ItemStack hopperStats = MiscUtils.getInstance().getItemStack(Material.KNOWLEDGE_BOOK, 1, (byte) 0, ChatUtils.chat("&f&lHopper Stats"), Arrays.asList(ChatUtils.chat("&7Hopper Location: &f&n" + coord), ChatUtils.chat("&7Hopper Level: &f&n" + MiscUtils.getInstance().getHopperFromLocation(location).getLevel()), ChatUtils.chat("&7Item Stacks transfered in 5 seconds: &f&n" + MiscUtils.getInstance().getHopperFromLocation(location).getMultiplier())));
+        ItemStack hopperStats = MiscUtils.getInstance().getItemStack(UMaterial.KNOWLEDGE_BOOK.getMaterial(), 1, (byte) 0, ChatUtils.chat("&f&lHopper Stats"), Arrays.asList(ChatUtils.chat("&7Hopper Location: &f&n" + coord), ChatUtils.chat("&7Hopper Level: &f&n" + MiscUtils.getInstance().getHopperFromLocation(location).getLevel()), ChatUtils.chat("&7Item Stacks transfered every second: &f&n" + multiplier)));
 
-        ItemStack showChunkBorder = MiscUtils.getInstance().getItemStack(Material.BARRIER, 1, (byte) 0, ChatUtils.chat("&f&lShow Chunk Border"), Arrays.asList(ChatUtils.chat("&7Click this to show chunk borders for 5 seconds!")));
+        ItemStack showChunkBorder = MiscUtils.getInstance().getItemStack(UMaterial.BARRIER.getMaterial(), 1, (byte) 0, ChatUtils.chat("&f&lShow Chunk Border"), Arrays.asList(ChatUtils.chat("&7Click this to show chunk borders for 5 seconds!")));
+
 
         gui.setItem(12, hopperInv);
         gui.setItem(14, hopperStats);
@@ -92,6 +94,7 @@ public class GUIManager {
             nbt.setInt("locx", (int) retrohopper.getLocation().getX());
             nbt.setInt("locy", (int) retrohopper.getLocation().getY());
             nbt.setInt("locz", (int) retrohopper.getLocation().getZ());
+            nbt.setString("world", retrohopper.getLocation().getWorld().getName());
 
             gui.setItem(slot, nbt.apply(it));
             slot++;
