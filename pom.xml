@@ -6,7 +6,7 @@
 
     <groupId>net.retrohopper</groupId>
     <artifactId>Retrohopper</artifactId>
-    <version>1.4</version>
+    <version>1.4.1</version>
 
     <repositories>
         <repository>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>com.github.OmerBenGera</groupId>
             <artifactId>WildStackerAPI</artifactId>
-            <version>b17</version>
+            <version>b18</version>
         </dependency>
     </dependencies>
 

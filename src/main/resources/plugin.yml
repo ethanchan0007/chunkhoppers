@@ -1,5 +1,5 @@
 name: Retrohopper
-version: 1.4
+version: 1.4.1
 main: net.retrohopper.src.Main
 authors: [WeChanDoIt, Techied]
 description: Adds a "Chunk Hopper" item that automatically collects all items in a chunk
