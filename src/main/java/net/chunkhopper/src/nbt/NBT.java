@@ -1,6 +1,6 @@
-package net.retrohopper.src.nbt;
+package net.chunkhopper.src.nbt;
 
-import net.retrohopper.src.Main;
+import net.chunkhopper.src.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 

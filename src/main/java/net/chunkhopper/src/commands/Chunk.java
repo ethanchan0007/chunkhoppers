@@ -1,7 +1,7 @@
-package net.retrohopper.src.commands;
+package net.chunkhopper.src.commands;
 
-import net.retrohopper.src.Main;
-import net.retrohopper.src.utils.MiscUtils;
+import net.chunkhopper.src.Main;
+import net.chunkhopper.src.utils.MiscUtils;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.command.Command;

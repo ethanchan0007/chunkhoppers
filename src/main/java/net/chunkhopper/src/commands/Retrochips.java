@@ -1,7 +1,7 @@
-package net.retrohopper.src.commands;
+package net.chunkhopper.src.commands;
 
-import net.retrohopper.src.utils.ChatUtils;
-import net.retrohopper.src.utils.UMaterial;
+import net.chunkhopper.src.utils.ChatUtils;
+import net.chunkhopper.src.utils.UMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

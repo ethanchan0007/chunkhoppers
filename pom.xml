@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.retrohopper</groupId>
-    <artifactId>Retrohopper</artifactId>
-    <version>1.4.1</version>
+    <groupId>net.chunkhopper</groupId>
+    <artifactId>ChunkHopper</artifactId>
+    <version>1.5</version>
 
     <repositories>
         <repository>
@@ -23,18 +23,13 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.OmerBenGera</groupId>
             <artifactId>SuperiorSkyblockAPI</artifactId>
             <version>b9</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.OmerBenGera</groupId>
-            <artifactId>WildStackerAPI</artifactId>
-            <version>b18</version>
         </dependency>
     </dependencies>
 

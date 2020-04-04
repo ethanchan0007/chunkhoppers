@@ -1,9 +1,9 @@
-package net.retrohopper.src.commands;
+package net.chunkhopper.src.commands;
 
-import net.retrohopper.src.Main;
-import net.retrohopper.src.nbt.NBT;
-import net.retrohopper.src.utils.ChatUtils;
-import net.retrohopper.src.utils.MiscUtils;
+import net.chunkhopper.src.Main;
+import net.chunkhopper.src.nbt.NBT;
+import net.chunkhopper.src.utils.ChatUtils;
+import net.chunkhopper.src.utils.MiscUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,7 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 import java.util.List;
 
-public class Retrohopper
+public class ChunkHopperCmd
         implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         String playername = "CONSOLE";
@@ -36,9 +36,9 @@ public class Retrohopper
                 }
                 target.getInventory().addItem(getHopperStack(amount, level));
                 sender.sendMessage(
-                        ChatUtils.chat("&3&l[!] &bYou gave " + target.getName() + " " + amount + "x &bretrohoppers!"));
+                        ChatUtils.chat("&3&l[!] &bYou gave " + target.getName() + " " + amount + "x &bchunkhoppers!"));
                 target.sendMessage(
-                        ChatUtils.chat("&3&l[!] &b" + playername + " has given you " + amount + "x retrohoppers!"));
+                        ChatUtils.chat("&3&l[!] &b" + playername + " has given you " + amount + "x chunkhoppers!"));
                 return true;
             } else
             {
@@ -55,6 +55,9 @@ public class Retrohopper
             if (sender.hasPermission("retronix.admin") && args[0].equalsIgnoreCase("list"))
             {
                 sender.sendMessage(MiscUtils.getInstance().getHopperLocationList());
+            } else if (sender.hasPermission("retronix.admin") && args[0].equalsIgnoreCase("info"))
+            {
+                sender.sendMessage(MiscUtils.getInstance().getHopperFromChunk(((Player) sender).getLocation().getChunk()).toString());
             } else
             {
                 sender.sendMessage(ChatUtils.chat("&4[!] &cYou cannot use this command!"));

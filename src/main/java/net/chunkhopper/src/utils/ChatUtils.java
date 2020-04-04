@@ -1,4 +1,4 @@
-package net.retrohopper.src.utils;
+package net.chunkhopper.src.utils;
 
 import org.bukkit.ChatColor;
 

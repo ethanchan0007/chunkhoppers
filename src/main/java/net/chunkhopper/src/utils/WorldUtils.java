@@ -1,6 +1,6 @@
-package net.retrohopper.src.utils;
+package net.chunkhopper.src.utils;
 
-import net.retrohopper.src.Main;
+import net.chunkhopper.src.Main;
 import org.bukkit.World;
 
 public class WorldUtils {

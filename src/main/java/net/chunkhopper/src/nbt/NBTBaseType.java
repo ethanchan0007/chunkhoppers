@@ -1,4 +1,4 @@
-package net.retrohopper.src.nbt;
+package net.chunkhopper.src.nbt;
 
 import org.bukkit.Bukkit;
 

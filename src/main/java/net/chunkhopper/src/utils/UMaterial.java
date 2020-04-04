@@ -1,4 +1,4 @@
-package net.retrohopper.src.utils;
+package net.chunkhopper.src.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -909,7 +909,7 @@ public enum UMaterial {
     POPPED_CHORUS_FRUIT(null, "CHORUS_FRUIT_POPPED", null, null, null, "POPPED_CHORUS_FRUIT"),
     POPPY("RED_ROSE", null, null, null, null, "POPPY"),
     PORKCHOP("PORK", null, null, null, null, "PORKCHOP"),
-    POTATO_ITEM("POTATO_ITEM", null, null, null, null, "POTATO"),
+    POTATO("POTATO_ITEM", null, null, null, null, "POTATO"),
     POTATOES("POTATO", null, null, null, null, "POTATOES"),
     POTION("POTION"),
     POTION_AWKWARD(PotionBase.NORMAL, "AWKWARD", false, false, "POTION"),
@@ -1217,7 +1217,7 @@ public enum UMaterial {
     STRUCTURE_BLOCK(null, "STRUCTURE_BLOCK"),
     STRUCTURE_VOID(null, null, null, null, null, null, "STRUCTURE_VOID"),
     SUGAR("SUGAR"),
-    SUGAR_CANE_ITEM("SUGAR_CANE"),
+    SUGAR_CANE("SUGAR_CANE"),
     SUNFLOWER("DOUBLE_PLANT", null, null, null, null, "SUNFLOWER"),
     SUSPICIOUS_STEW(null, null, null, null, null, null, "SUSPICIOUS_STEW"),
     SWEET_BERRIES(null, null, null, null, null, null, "SWEET_BERRIES"),

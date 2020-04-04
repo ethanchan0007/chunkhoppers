@@ -1,19 +1,19 @@
-name: Retrohopper
-version: 1.4.1
-main: net.retrohopper.src.Main
-authors: [WeChanDoIt, Techied]
+name: ChunkHoppers
+version: 1.5
+main: net.chunkhopper.src.Main
+authors: [WeChanDoIt]
 description: Adds a "Chunk Hopper" item that automatically collects all items in a chunk
-depend: [SuperiorSkyblock2, WildStacker]
+api-version: 1.15
 commands:
-  retrohopper:
-    description: Gives the specified player or command executor one or multiple RetroHoppers
-    usage: /retrohopper [amount] [player]
-    permission: retrohopper.give
+  chunkhopper:
+    description: Gives the specified player or command executor one or multiple chunkhoppers
+    usage: /chunkhopper [amount] [player]
+    permission: chunkhopper.give
     aliases: hopper
   retrochip:
     description: Gives the specified player or command executor one or multiple retrochips
     usage: /retrochip [amount] [player] [level]
-    permission: retrohopper.chips
+    permission: chunkhopper.chips
     aliases: retrochips
   chunk:
     description: See an outline of the chunk you are in!

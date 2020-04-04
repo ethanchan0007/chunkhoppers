@@ -1,7 +1,7 @@
-package net.retrohopper.src.utils;
+package net.chunkhopper.src.utils;
 
-import net.retrohopper.src.Main;
-import net.retrohopper.src.objects.Retrohopper;
+import net.chunkhopper.src.Main;
+import net.chunkhopper.src.objects.ChunkHopper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -16,10 +16,10 @@ import java.util.*;
 
 public class DataHandler {
 
-    private File file = new File("plugins/Retrohopper/", "data.yml");
+    private File file = new File("plugins/ChunkHopper/", "data.yml");
     private FileConfiguration data = YamlConfiguration.loadConfiguration(file);
-    private List<Retrohopper> hoppers = new ArrayList<Retrohopper>();
-    private Map<UUID, Retrohopper> upgrading = new HashMap<UUID, Retrohopper>();
+    private List<ChunkHopper> hoppers = new ArrayList<ChunkHopper>();
+    private Map<UUID, ChunkHopper> upgrading = new HashMap<UUID, ChunkHopper>();
 
     public void saveData() {
 
@@ -32,7 +32,7 @@ public class DataHandler {
         if (hoppers == null || hoppers.isEmpty()) {
             return;
         }
-        for (Retrohopper hopper : hoppers) {
+        for (ChunkHopper hopper : hoppers) {
             double x = hopper.getLocation().getBlockX();
             double y = hopper.getLocation().getBlockY();
             double z = hopper.getLocation().getBlockZ();
@@ -75,20 +75,20 @@ public class DataHandler {
             World world = Bukkit.getWorld(data.getString("hoppers." + s + ".location.world"));
             int level = data.getInt("hoppers." + s + ".level");
             Location location = new Location(world, x, y, z);
-            Retrohopper hopper = new Retrohopper(location, inventory, itemFilterList, s, level);
+            ChunkHopper hopper = new ChunkHopper(location, inventory, itemFilterList, s, level);
             hoppers.add(hopper);
         }
     }
 
-    public List<Retrohopper> getHoppers() {
+    public List<ChunkHopper> getHoppers() {
         return hoppers;
     }
 
-    public void setHoppers(List<Retrohopper> retrohopperList) {
+    public void setHoppers(List<ChunkHopper> retrohopperList) {
         hoppers = retrohopperList;
     }
 
-    public Map<UUID, Retrohopper> getUpgrading() {
+    public Map<UUID, ChunkHopper> getUpgrading() {
         return upgrading;
     }
 
