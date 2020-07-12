@@ -13,7 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 public class HopperPlace implements Listener {
@@ -35,10 +37,10 @@ public class HopperPlace implements Listener {
                     if (nbt.hasKey("Level")) {
                         level = nbt.getInt("Level");
                     }
-                    player.sendMessage(ChatUtils.chat("&3&l[!] &bYou placed a chunkhopper!"));
-                    dataHandler.getHoppers().add(new ChunkHopper(block.getLocation(), Bukkit.createInventory(null, 54, Main.name), MiscUtils.itemFilterList(), UUID.randomUUID().toString(), level));
+                    player.sendMessage(ChatUtils.chat("&3&l[!] &bYou placed a retrohopper!"));
+                    dataHandler.getHoppers().add(new ChunkHopper(block.getLocation(), Bukkit.createInventory(null, 54, Main.name), (LinkedHashMap<ItemStack, Boolean>) MiscUtils.itemFilterList().clone(), UUID.randomUUID().toString(), level));
                 } else {
-                    player.sendMessage(ChatUtils.chat("&4&l[!] &cOnly one chunkhopper is allowed per chunk!"));
+                    player.sendMessage(ChatUtils.chat("&4&l[!] &cOnly one retrohopper is allowed per chunk!"));
                     event.setCancelled(true);
                 }
 

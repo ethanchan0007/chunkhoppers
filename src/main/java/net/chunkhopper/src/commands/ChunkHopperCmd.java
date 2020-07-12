@@ -36,9 +36,9 @@ public class ChunkHopperCmd
                 }
                 target.getInventory().addItem(getHopperStack(amount, level));
                 sender.sendMessage(
-                        ChatUtils.chat("&3&l[!] &bYou gave " + target.getName() + " " + amount + "x &bchunkhoppers!"));
+                        ChatUtils.chat("&3&l[!] &bYou gave " + target.getName() + " " + amount + "x &bretrohoppers!"));
                 target.sendMessage(
-                        ChatUtils.chat("&3&l[!] &b" + playername + " has given you " + amount + "x chunkhoppers!"));
+                        ChatUtils.chat("&3&l[!] &b" + playername + " has given you " + amount + "x retrohoppers!"));
                 return true;
             } else
             {

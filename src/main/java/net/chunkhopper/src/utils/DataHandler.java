@@ -4,6 +4,7 @@ import net.chunkhopper.src.Main;
 import net.chunkhopper.src.objects.ChunkHopper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -45,11 +46,11 @@ public class DataHandler {
             data.set("hoppers." + hopperName + ".location.world", world);
 
             // item filter
-            for (ItemStack item : hopper.getItemFilterList().keySet())
-            {
-                data.set("hoppers." + hopperName + ".filter." + item.getType().toString(), hopper.getItemFilterList().get(item));
+            if (!hopper.getItemFilterList().equals(null)) {
+                for (ItemStack item : hopper.getItemFilterList().keySet()) {
+                    data.set("hoppers." + hopperName + ".filter." + item.getType().toString(), hopper.getItemFilterList().get(item));
+                }
             }
-
         }
         try {
             data.save(file);
@@ -67,11 +68,13 @@ public class DataHandler {
             double y = data.getDouble("hoppers." + s + ".location.y");
             double z = data.getDouble("hoppers." + s + ".location.z");
             Inventory inventory = Bukkit.createInventory(null, 54, Main.name);
-            LinkedHashMap<ItemStack, Boolean> itemFilterList = MiscUtils.itemFilterList(); // make it so that it imports custom one soon
-            for (ItemStack item : itemFilterList.keySet())
+            LinkedHashMap<ItemStack, Boolean> itemFilterList = new LinkedHashMap<>();
+            for (String f : data.getConfigurationSection("hoppers." + s + ".filter").getKeys(true))
             {
-                itemFilterList.put(item, data.getBoolean("hoppers." + s + ".filter." + item.getType().toString()));
+                System.out.println(f);
+                itemFilterList.put(new ItemStack(Material.getMaterial(f)), Boolean.valueOf(data.getBoolean("hoppers." + s + ".filter." + f)));
             }
+
             World world = Bukkit.getWorld(data.getString("hoppers." + s + ".location.world"));
             int level = data.getInt("hoppers." + s + ".level");
             Location location = new Location(world, x, y, z);

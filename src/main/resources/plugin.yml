@@ -1,15 +1,14 @@
 name: ChunkHoppers
-version: 1.5
+version: 1.6
 main: net.chunkhopper.src.Main
 authors: [WeChanDoIt]
 description: Adds a "Chunk Hopper" item that automatically collects all items in a chunk
-api-version: 1.15
 commands:
   chunkhopper:
     description: Gives the specified player or command executor one or multiple chunkhoppers
     usage: /chunkhopper [amount] [player]
     permission: chunkhopper.give
-    aliases: hopper
+    aliases: [retrohopper, hopper]
   retrochip:
     description: Gives the specified player or command executor one or multiple retrochips
     usage: /retrochip [amount] [player] [level]

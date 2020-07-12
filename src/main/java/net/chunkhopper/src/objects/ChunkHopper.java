@@ -1,8 +1,5 @@
 package net.chunkhopper.src.objects;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-
 import net.chunkhopper.src.Main;
 import net.chunkhopper.src.utils.DataHandler;
 import net.chunkhopper.src.utils.MiscUtils;
@@ -15,27 +12,31 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Hopper;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 
 public class ChunkHopper {
     private Location location;
-    private Inventory[] inventoryList;
+    private Inventory inventory;
     private LinkedHashMap<ItemStack, Boolean> itemFilterList;
+    private List<Inventory> filterInventories = new ArrayList();
     private int level;
     private boolean isTransferring;
     String id;
 
     public ChunkHopper(Location loc, Inventory inventory, LinkedHashMap<ItemStack, Boolean> itemFilterList, String s, int level) {
-        inventoryList = new Inventory[3];
+        this.inventory = inventory;
         this.location = loc;
         this.itemFilterList = itemFilterList;
         this.id = s;
         this.level = level;
         this.isTransferring = false;
-        inventoryList[0] = inventory;
     }
 
     public String toString() {
-        return "Location: " + this.location + "\nInventory: " + this.inventoryList[0] + "\nItemFilterList: " + this.itemFilterList
+        return "Location: " + this.location + "\nInventory: " + this.inventory + "\nItemFilterList: " + this.itemFilterList
                 .toString() + "\nLevel: " + this.level + "\nID: " + this.id;
     }
 
@@ -55,12 +56,8 @@ public class ChunkHopper {
     }
 
 
-    public void setInventory(Inventory inventory, int num) {
-        inventoryList[num] = inventory;
-    }
-
-    public void setInventoryList(Inventory[] inventoryList) {
-        this.inventoryList = inventoryList;
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
     }
 
 
@@ -68,6 +65,17 @@ public class ChunkHopper {
         this.itemFilterList = itemFilterList;
     }
 
+    public void addItemToFilterList(ItemStack itemStack) {
+        this.itemFilterList.put(itemStack, true);
+    }
+
+    public void addItemToFilterList(ItemStack itemStack, Boolean bool) {
+        this.itemFilterList.put(itemStack, bool);
+    }
+
+    public void removeItemFromFilterList(ItemStack itemStack) {
+        itemFilterList.remove(itemStack);
+    }
 
     public Location getLocation() {
         return this.location;
@@ -78,15 +86,24 @@ public class ChunkHopper {
         return this.location.getChunk();
     }
 
-
-    public Inventory getInventory(int num) {
-        return inventoryList[num];
+    public int getAmountOfFilterPages() {
+        return (this.itemFilterList.keySet().size() / 45) + 1;
     }
 
-    public Inventory[] getInventoryList() {
-        return inventoryList;
+    public List<Inventory> getFilterInventories()
+    {
+        return filterInventories;
     }
 
+    public void setFilterInventories(List<Inventory> filterInventories)
+    {
+        this.filterInventories = filterInventories;
+    }
+
+
+    public Inventory getInventory() {
+        return inventory;
+    }
 
     public LinkedHashMap<ItemStack, Boolean> getItemFilterList() {
         return this.itemFilterList;
@@ -121,85 +138,59 @@ public class ChunkHopper {
         this.id = id;
     }
 
-    public void addItemToChunkHopper(ItemStack itemStack)
-    {
-        for (Inventory inventory : inventoryList)
-        {
-            if (inventory.firstEmpty() != -1)
-            {
-                inventory.addItem(itemStack);
-                return;
-            }
-        }
+    public void addItemToChunkHopper(ItemStack itemStack) {
+        inventory.addItem(itemStack);
     }
 
-    public void addItemToChunkHopper(ItemStack[] itemStack)
-    {
-        for (ItemStack item : itemStack) {
-            for (Inventory inventory : inventoryList) {
-                if (inventory.firstEmpty() != -1) {
-                    inventory.addItem(itemStack);
-                    return;
-                }
-            }
-        }
-    }
-
-    public boolean isChunkHopperInventoryFull()
-    {
-        for (Inventory inventory : inventoryList)
-        {
-            if (inventory != null && !MiscUtils.isInventoryFull(inventory)) return false;
-        }
-        return true;
+    public boolean isChunkHopperInventoryFull() {
+        return (inventory.firstEmpty() == -1);
     }
 
 
     public void hopperTimer(final DataHandler dataHandler) {
         (new BukkitRunnable() {
             public void run() {
-                for (Inventory inv : inventoryList) {
-                    Location l = ChunkHopper.this.location;
-                    if (inv != null) {
-                        ItemStack[] contents = inv.getContents();
-                        if (WorldUtils.isWorldLoaded(l.getWorld()) && l.getChunk().isLoaded()) {
-                            try {
-                                Hopper hopper = (Hopper) l.getBlock().getState().getData();
-                                if (l.getBlock().getRelative(hopper.getFacing()).getState() instanceof InventoryHolder) {
-                                    InventoryHolder ih = (InventoryHolder) l.getBlock().getRelative(hopper.getFacing()).getState();
-                                    if (ih != null && ih.getInventory().firstEmpty() != -1 && !MiscUtils.isInventoryEmpty(inv.getContents())) {
-                                        ArrayList<Integer> nonNull = new ArrayList<Integer>();
-                                        for (int i = 0; i < inv.getContents().length; i++) {
-                                            if (inv.getContents()[i] != null) nonNull.add(Integer.valueOf(i));
-                                        }
-                                        if (nonNull.size() > 0) {
-                                            for (int i = 0; i < ChunkHopper.this.getMultiplier(); i++) {
-                                                if (nonNull.size() > i) {
-                                                    ih.getInventory().addItem(new ItemStack[]{contents[((Integer) nonNull.get(i)).intValue()]});
-                                                    contents[((Integer) nonNull.get(i)).intValue()] = null;
-                                                }
-                                            }
-                                            inv.setContents(contents);
-                                        }
-                                    } else {
-                                        ChunkHopper.this.isTransferring = false;
-                                        cancel();
+                Location l = ChunkHopper.this.location;
+                if (inventory != null) {
+                    ItemStack[] contents = inventory.getContents();
+                    if (WorldUtils.isWorldLoaded(l.getWorld()) && l.getChunk().isLoaded()) {
+                        try {
+                            Hopper hopper = (Hopper) l.getBlock().getState().getData();
+                            if (l.getBlock().getRelative(hopper.getFacing()).getState() instanceof InventoryHolder) {
+                                InventoryHolder ih = (InventoryHolder) l.getBlock().getRelative(hopper.getFacing()).getState();
+                                if (ih != null && ih.getInventory().firstEmpty() != -1 && !MiscUtils.isInventoryEmpty(inventory.getContents())) {
+                                    ArrayList<Integer> nonNull = new ArrayList<Integer>();
+                                    for (int i = 0; i < inventory.getContents().length; i++) {
+                                        if (inventory.getContents()[i] != null) nonNull.add(Integer.valueOf(i));
                                     }
+                                    if (nonNull.size() > 0) {
+                                        for (int i = 0; i < ChunkHopper.this.getMultiplier(); i++) {
+                                            if (nonNull.size() > i) {
+                                                ih.getInventory().addItem(new ItemStack[]{contents[((Integer) nonNull.get(i)).intValue()]});
+                                                contents[((Integer) nonNull.get(i)).intValue()] = null;
+                                            }
+                                        }
+                                        inventory.setContents(contents);
+                                    }
+                                } else {
+                                    ChunkHopper.this.isTransferring = false;
+                                    cancel();
                                 }
-                            } catch (ClassCastException e) {
-                                dataHandler.getHoppers().remove(MiscUtils.getInstance().getHopperFromLocation(ChunkHopper.this.location));
-                                cancel();
                             }
-                        } else {
-                            ChunkHopper.this.isTransferring = false;
+                        } catch (ClassCastException e) {
+                            dataHandler.getHoppers().remove(MiscUtils.getInstance().getHopperFromLocation(ChunkHopper.this.location));
                             cancel();
-
                         }
                     } else {
                         ChunkHopper.this.isTransferring = false;
                         cancel();
+
                     }
+                } else {
+                    ChunkHopper.this.isTransferring = false;
+                    cancel();
                 }
+
             }
         }).runTaskTimer(Main.getPlugin(), 20L, 20L);
     }

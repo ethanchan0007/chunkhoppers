@@ -6,7 +6,19 @@
 
     <groupId>net.chunkhopper</groupId>
     <artifactId>ChunkHopper</artifactId>
-    <version>1.5</version>
+    <version>1.6</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <repositories>
         <repository>
@@ -23,13 +35,20 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.15.2-R0.1-SNAPSHOT</version>
+            <version>1.12.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.OmerBenGera</groupId>
             <artifactId>SuperiorSkyblockAPI</artifactId>
             <version>b9</version>
+        </dependency>
+        <dependency>
+            <groupId>me.swanis</groupId>
+            <artifactId>mobcoins</artifactId>
+            <version>1.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/jars/UltimateStacker-1.11.17.jar</systemPath>
         </dependency>
     </dependencies>
 

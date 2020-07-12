@@ -27,35 +27,17 @@ public class ItemSpawnEvent implements Listener {
 
         try {
             ChunkHopper chunkhopper = MiscUtils.getInstance().getHopperFromChunk(chunk);
-            /*ItemStack item = WildStackerAPI.getStackedItem(event.getEntity()).getItemStack();
-            int amount = WildStackerAPI.getStackedItem(event.getEntity()).getStackAmount();*/
             ItemStack item = event.getEntity().getItemStack();
             int amount = item.getAmount();
-            int transfered = 0;
             if (!chunkhopper.isChunkHopperInventoryFull() && !event.isCancelled()) {
                 for (ItemStack i : chunkhopper.getItemFilterList().keySet()) {
-                    if (i.getType() == item.getType() && chunkhopper.getItemFilterList().get(i).booleanValue()) {
-                        if (amount >= 64) {
-                            for (int f = 0; f < amount / 64; f++) {
-                                item.setAmount(64);
-                                if (!MiscUtils.isInventoryFull(chunkhopper.getInventoryList())) {
-                                    chunkhopper.addItemToChunkHopper(new ItemStack[]{item});
-                                    transfered += 64;
-                                } else break;
-                            }
-                        }
-                        if (!MiscUtils.isInventoryFull(chunkhopper.getInventoryList())) {
-                            item.setAmount(amount % 64);
-                            chunkhopper.addItemToChunkHopper(new ItemStack[]{item});
-                            transfered += amount % 64;
+                    if (i.getType() == item.getType() && chunkhopper.getItemFilterList().get(i).booleanValue() && i.getData().getData() == item.getData().getData()) {
+                        if (!MiscUtils.isInventoryFull(chunkhopper.getInventory())) {
+                            chunkhopper.addItemToChunkHopper(item);
                         }
                         event.getEntity().getLocation().getWorld().playEffect(itemLoc, Effect.SMOKE, 1);
-                        /*if (transfered == amount) {*/
-                            event.getEntity().remove();
-                        /*} else
-                        {
-                            WildStackerAPI.getStackedItem(event.getEntity()).setStackAmount(amount - transfered, true);
-                        }*/
+                        event.getEntity().remove();
+
                         if (!chunkhopper.getTransferring()) {
                             chunkhopper.hopperTimer(this.dataHandler);
                             chunkhopper.setTransferring(true);
@@ -79,7 +61,7 @@ public class ItemSpawnEvent implements Listener {
             ItemStack item = event.getItem().getItemStack();
             event.setCancelled(true);
             if (!chunkhopper.isChunkHopperInventoryFull()) {
-                chunkhopper.addItemToChunkHopper(new ItemStack[]{item});
+                chunkhopper.addItemToChunkHopper(item);
 
                 event.getItem().setItemStack(null);
                 if (!chunkhopper.getTransferring()) {

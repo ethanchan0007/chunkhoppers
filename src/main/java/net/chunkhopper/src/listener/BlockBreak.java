@@ -40,15 +40,14 @@ public class BlockBreak implements Listener {
             ChunkHopper chunkhopper = MiscUtils.getInstance().getHopperFromLocation(location);
             level = chunkhopper.getLevel();
             dataHandler.getHoppers().remove(chunkhopper);
-            player.sendMessage(ChatUtils.chat("&3&l[!] &bYou removed a chunkhopper!"));
+            player.sendMessage(ChatUtils.chat("&3&l[!] &bYou removed a retrohopper!"));
             event.setDropItems(false);
             if (player.getInventory().firstEmpty() != -1)
                 player.getInventory().addItem(ChunkHopperCmd.getHopperStack(1, level));
             else
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), ChunkHopperCmd.getHopperStack(1, level));
             try {
-                for (Inventory i : chunkhopper.getInventoryList()) {
-                    for (ItemStack j : i.getContents()) {
+                    for (ItemStack j : chunkhopper.getInventory().getContents()) {
                         if (j != null) contents.add(j);
                     }
                     for (ItemStack stack : contents) {
@@ -56,7 +55,7 @@ public class BlockBreak implements Listener {
                             event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
                         }
                     }
-                }
+
             } catch (NullPointerException f) {
                 return;
             }
