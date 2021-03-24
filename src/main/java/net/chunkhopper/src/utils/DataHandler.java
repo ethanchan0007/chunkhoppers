@@ -40,15 +40,17 @@ public class DataHandler {
             String world = hopper.getLocation().getWorld().getName();
             String hopperName = hopper.getID();
             data.set("hoppers." + hopperName + ".level", hopper.getLevel());
+            data.set("hoppers." + hopperName + ".level", hopper.getInvSize());
             data.set("hoppers." + hopperName + ".location.x", x);
             data.set("hoppers." + hopperName + ".location.y", y);
             data.set("hoppers." + hopperName + ".location.z", z);
             data.set("hoppers." + hopperName + ".location.world", world);
+            data.set("hoppers." + hopperName + ".isCondensing", hopper.isCondensing());
 
             // item filter
-            if (!hopper.getItemFilterList().equals(null)) {
+            if (hopper.getItemFilterList() != null) {
                 for (ItemStack item : hopper.getItemFilterList().keySet()) {
-                    data.set("hoppers." + hopperName + ".filter." + item.getType().toString(), hopper.getItemFilterList().get(item));
+                    data.set("hoppers." + hopperName + ".filter." + item.getType().toString() + ":" + String.valueOf(item.getData().getData()), hopper.getItemFilterList().get(item));
                 }
             }
         }
@@ -67,20 +69,40 @@ public class DataHandler {
             double x = data.getDouble("hoppers." + s + ".location.x");
             double y = data.getDouble("hoppers." + s + ".location.y");
             double z = data.getDouble("hoppers." + s + ".location.z");
-            Inventory inventory = Bukkit.createInventory(null, 54, Main.name);
             LinkedHashMap<ItemStack, Boolean> itemFilterList = new LinkedHashMap<>();
             for (String f : data.getConfigurationSection("hoppers." + s + ".filter").getKeys(true))
             {
-                System.out.println(f);
-                itemFilterList.put(new ItemStack(Material.getMaterial(f)), Boolean.valueOf(data.getBoolean("hoppers." + s + ".filter." + f)));
+                String material = f.split(":")[0];
+                int type;
+                try{
+                    type = Integer.parseInt(f.split(":")[1]);
+                } catch (ArrayIndexOutOfBoundsException e)
+                {
+                    type = 0;
+                }
+                itemFilterList.put(new ItemStack(Material.getMaterial(material), 1, (short) type), data.getBoolean("hoppers." + s + ".filter." + f));
             }
 
+            boolean isCondensing = data.getBoolean("hoppers." + s + ".isCondensing");
             World world = Bukkit.getWorld(data.getString("hoppers." + s + ".location.world"));
             int level = data.getInt("hoppers." + s + ".level");
+            int invSize = data.getInt("hoppers." + s + ".invSize");
             Location location = new Location(world, x, y, z);
-            ChunkHopper hopper = new ChunkHopper(location, inventory, itemFilterList, s, level);
+            ChunkHopper hopper = new ChunkHopper(location, itemFilterList, s, level, invSize);
+            hopper.setCondensing(isCondensing);
             hoppers.add(hopper);
         }
+    }
+
+    public ChunkHopper getHopperFromUUID(String uuid) {
+        if (hoppers.isEmpty())
+            return null;
+        for (ChunkHopper hopper : hoppers)
+        {
+            if (hopper.getID().equals(uuid))
+                return hopper;
+        }
+        return null;
     }
 
     public List<ChunkHopper> getHoppers() {

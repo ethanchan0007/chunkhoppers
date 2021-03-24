@@ -6,9 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="ChunkHopper" />
         <module name="Retrohopper" />
         <module name="retrohoppers" />
-        <module name="ChunkHopper" />
       </profile>
     </annotationProcessing>
   </component>

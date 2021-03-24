@@ -2,10 +2,10 @@ package net.chunkhopper.src.listener;
 
 import net.chunkhopper.src.commands.ChunkHopperCmd;
 import net.chunkhopper.src.objects.ChunkHopper;
-import net.chunkhopper.src.utils.DataHandler;
-import net.chunkhopper.src.utils.UMaterial;
 import net.chunkhopper.src.utils.ChatUtils;
+import net.chunkhopper.src.utils.DataHandler;
 import net.chunkhopper.src.utils.MiscUtils;
+import net.chunkhopper.src.utils.UMaterial;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -47,14 +47,16 @@ public class BlockBreak implements Listener {
             else
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), ChunkHopperCmd.getHopperStack(1, level));
             try {
-                    for (ItemStack j : chunkhopper.getInventory().getContents()) {
+                for (Inventory inv : chunkhopper.getInventories()) {
+                    for (ItemStack j : inv.getContents()) {
                         if (j != null) contents.add(j);
                     }
-                    for (ItemStack stack : contents) {
-                        if (stack != null) {
-                            event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
-                        }
+                }
+                for (ItemStack stack : contents) {
+                    if (stack != null) {
+                        event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
                     }
+                }
 
             } catch (NullPointerException f) {
                 return;

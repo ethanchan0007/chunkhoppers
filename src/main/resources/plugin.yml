@@ -1,5 +1,5 @@
 name: ChunkHoppers
-version: 1.6
+version: 1.7
 main: net.chunkhopper.src.Main
 authors: [WeChanDoIt]
 description: Adds a "Chunk Hopper" item that automatically collects all items in a chunk

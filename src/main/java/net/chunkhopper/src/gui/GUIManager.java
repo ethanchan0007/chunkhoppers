@@ -1,5 +1,7 @@
 package net.chunkhopper.src.gui;
 
+import net.chunkhopper.src.Main;
+import net.chunkhopper.src.config.ConfigData;
 import net.chunkhopper.src.nbt.NBT;
 import net.chunkhopper.src.objects.ChunkHopper;
 import net.chunkhopper.src.utils.ChatUtils;
@@ -11,6 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -27,40 +30,41 @@ public class GUIManager
 
 
     public void openMainInventory(Player player, Location location) {
-        Inventory gui = Bukkit.createInventory(player, 27,
-                ChatColor.translateAlternateColorCodes('&', "&8&nRetroHopper Information"));
+        Inventory gui = Bukkit.createInventory(null, InventoryType.DISPENSER, ChatColor.translateAlternateColorCodes('&', "&8&nRetroHopper Information"));
+
+        ChunkHopper hopper = MiscUtils.getInstance().getHopperFromLocation(location);
 
         int x = (int)location.getX();
         int y = (int)location.getY();
         int z = (int)location.getZ();
         String coord = x + ", " + y + ", " + z;
 
-        int multiplier = MiscUtils.getInstance().getHopperFromLocation(location).getMultiplier();
+        int multiplier = hopper.getMultiplier();
 
         ItemStack hopperInv = MiscUtils.getInstance().getItemStack(UMaterial.CHEST.getMaterial(), 1, (byte)0, ChatUtils.chat("&f&lFilter Options"), Arrays.asList(new String[] { ChatUtils.chat("&7Change the item filter"), ChatUtils.chat("&7for this retrohopper") }));
 
-        ItemStack hopperStats = MiscUtils.getInstance().getItemStack(UMaterial.KNOWLEDGE_BOOK.getMaterial(), 1, (byte)0, ChatUtils.chat("&f&lHopper Stats"), Arrays.asList(new String[] { ChatUtils.chat("&7Hopper Location: &f&n" + coord), ChatUtils.chat("&7Hopper Level: &f&n" + MiscUtils.getInstance().getHopperFromLocation(location).getLevel()), ChatUtils.chat("&7Item Stacks transfered every second: &f&n" + multiplier) }));
+        ItemStack hopperStats = MiscUtils.getInstance().getItemStack(UMaterial.KNOWLEDGE_BOOK.getMaterial(), 1, (byte)0, ChatUtils.chat("&f&lHopper Stats"), Arrays.asList(new String[] { ChatUtils.chat("&7Hopper Location: &f&n" + coord), ChatUtils.chat("&7Hopper Level: &f&n" + hopper.getLevel()), ChatUtils.chat("&7Item Stacks transfered every second: &f&n" + multiplier) }));
 
         ItemStack showChunkBorder = MiscUtils.getInstance().getItemStack(UMaterial.BARRIER.getMaterial(), 1, (byte)0, ChatUtils.chat("&f&lShow Chunk Border"), Arrays.asList(new String[] { ChatUtils.chat("&7Click this to show chunk borders for 5 seconds!") }));
 
-        NBT nbt = NBT.get(hopperInv);
-        nbt.setInt("locx", x);
-        nbt.setInt("locy", y);
-        nbt.setInt("locz", z);
-        nbt.setString("world", location.getWorld().getName());
+        ItemStack condense = MiscUtils.getInstance().getItemStack(UMaterial.IRON_BLOCK.getMaterial(), 1, (byte)0, ChatUtils.chat("&f&lCondense Ores -> Blocks"), Arrays.asList(new String[] { ChatUtils.chat("&7The Condense feature is " + (hopper.isCondensing() ? "&aenabled" : "&cdisabled") + "&7!"), ChatUtils.chat("&7Click this to " + (!hopper.isCondensing() ? "&aenable" : "&cdisable") + " &7condensing!") }));
 
-        NBT nbt1 = NBT.get(showChunkBorder);
-        nbt1.setInt("locx", x);
-        nbt1.setInt("locy", y);
-        nbt1.setInt("locz", z);
-        nbt1.setString("world", location.getWorld().getName());
+        ItemStack particles = MiscUtils.getInstance().getItemStack(UMaterial.REDSTONE.getMaterial(), 1, (byte)0, ChatUtils.chat("&f&lParticles on Transfer"), Arrays.asList(new String[] { ChatUtils.chat("&7This feature is " + (hopper.isParticleEnabled() ? "&aenabled" : "&cdisabled") + "&7!"), ChatUtils.chat("&7Click this to " + (!hopper.isParticleEnabled() ? "&aenable" : "&cdisable") + " &7particles on transfer!") }));
 
-        gui.setItem(12, nbt.apply(hopperInv));
-        gui.setItem(14, hopperStats);
-        gui.setItem(22, nbt1.apply(showChunkBorder));
+        hopperInv = addCoordNBT(hopperInv, location);
+        showChunkBorder = addCoordNBT(showChunkBorder, location);
+        condense = addCoordNBT(condense, location);
+        particles = addCoordNBT(particles, location);
 
-        ItemStack lightfillerItem = ItemBuilder.getItemStack(UMaterial.GRAY_STAINED_GLASS_PANE.getItemStack(), " ");
-        ItemStack darkFillerItem = ItemBuilder.getItemStack(UMaterial.BLACK_STAINED_GLASS_PANE.getItemStack(), " ");
+        gui.setItem(1, particles);
+        gui.setItem(3, showChunkBorder);
+        gui.setItem(4, hopperInv);
+        gui.setItem(7, hopperStats);
+
+        if (hopper.getLevel() >= 3)
+            gui.setItem(5, condense);
+
+        ItemStack fillerItem = ItemBuilder.getItemStack(UMaterial.BLUE_STAINED_GLASS_PANE.getItemStack(), " ");
 
         int i = 0;
 
@@ -70,10 +74,98 @@ public class GUIManager
             }
         }
         for (int j = 0; j < i; j++) {
-            gui.setItem(gui.firstEmpty(), (gui.firstEmpty() % 2 == 1) ? lightfillerItem : darkFillerItem);
+            gui.setItem(gui.firstEmpty(),  fillerItem);
         }
 
         player.openInventory(gui);
+    }
+
+    public static List<Inventory> getDefaultChunkHopperInventories(ChunkHopper hopper, String uuid) {
+        List<Inventory> inventoryList = new ArrayList<>();
+
+        int amount = (hopper.getInvSize() / 45) + 1;
+
+        for (int i = 0; i < amount; i++) {
+            int size;
+            if (i == amount - 1) {
+                size = hopper.getInvSize() % 45;
+            } else size = 45;
+
+            Inventory inv = Bukkit.createInventory(null, 54, ChatUtils.chat(Main.name));
+
+            ItemStack filler = ConfigData.fillerItems.get(0).clone();
+            ItemMeta fillerMeta = filler.getItemMeta();
+            if (fillerMeta.getLore() != null) {
+                List<String> fillerLore = new ArrayList<>();
+                for (String line : fillerMeta.getLore()) {
+                    fillerLore.add(ChatUtils.chat(line.replaceAll("<page>", String.valueOf(i + 1))));
+                }
+                fillerMeta.setLore(fillerLore);
+                filler.setItemMeta(fillerMeta);
+            }
+            NBT fillerNBT = NBT.get(filler);
+            fillerNBT.setInt("page", i + 1);
+            fillerNBT.setString("backpackUUID", uuid);
+            filler = fillerNBT.apply(filler);
+
+            ItemStack back = ConfigData.buttonItems.get(0).clone();
+            ItemMeta backMeta = back.getItemMeta();
+            if (backMeta.getLore() != null) {
+                List<String> backLore = new ArrayList<>();
+                for (String line : backMeta.getLore()) {
+                    backLore.add(ChatUtils.chat(line.replaceAll("<page>", String.valueOf(i))));
+                }
+                backMeta.setLore(backLore);
+                back.setItemMeta(backMeta);
+            }
+            NBT backNBT = NBT.get(back);
+            backNBT.setInt("page", i + 1);
+            backNBT.setString("backpackUUID", uuid);
+            backNBT.setString("backpackButton", "back");
+            back = backNBT.apply(back);
+
+            ItemStack next = ConfigData.buttonItems.get(1).clone();
+            ItemMeta nextMeta = next.getItemMeta();
+            if (nextMeta.getLore() != null) {
+                List<String> nextLore = new ArrayList<>();
+                for (String line : nextMeta.getLore()) {
+                    nextLore.add(ChatUtils.chat(line.replaceAll("<page>", String.valueOf(i + 2))));
+                }
+                nextMeta.setLore(nextLore);
+                next.setItemMeta(nextMeta);
+            }
+            NBT nextNBT = NBT.get(next);
+            nextNBT.setInt("page", i + 1);
+            nextNBT.setString("backpackUUID", uuid);
+            nextNBT.setString("backpackButton", "next");
+            next = nextNBT.apply(next);
+
+            if (!(i == 0 && i == amount - 1)) {
+                if (i != amount - 1) {
+                    inv.setItem(53, next);
+                }
+                if (i != 0) {
+                    inv.setItem(45, back);
+                }
+            }
+            for (int j = 0; j < 54; j++) {
+                if (j >= size) {
+                    if (inv.getContents()[j] == null) inv.setItem(j, filler);
+                }
+            }
+            inventoryList.add(inv);
+        }
+        return inventoryList;
+    }
+
+    private ItemStack addCoordNBT(ItemStack itemStack, Location location)
+    {
+        NBT nbt = NBT.get(itemStack);
+        nbt.setInt("locx", location.getBlockX());
+        nbt.setInt("locy", location.getBlockY());
+        nbt.setInt("locz", location.getBlockZ());
+        nbt.setString("world", location.getWorld().getName());
+        return nbt.apply(itemStack);
     }
 
 
@@ -88,52 +180,24 @@ public class GUIManager
             ItemMeta previousMeta = previous.getItemMeta();
             previousMeta.setDisplayName(ChatUtils.chat("&6<< Previous Page"));
             previous.setItemMeta(previousMeta);
-            NBT nbt1 = NBT.get(previous);
-            nbt1.setInt("locx", Integer.valueOf((int)chunkHopper.getLocation().getX()));
-            nbt1.setInt("locy", Integer.valueOf((int)chunkHopper.getLocation().getY()));
-            nbt1.setInt("locz", Integer.valueOf((int)chunkHopper.getLocation().getZ()));
-            nbt1.setInt("page", Integer.valueOf(o));
-            nbt1.setString("world", chunkHopper.getLocation().getWorld().getName());
+            previous = addCoordNBT(previous, chunkHopper.getLocation());
 
             ItemStack next = new ItemStack(UMaterial.PAPER.getMaterial(), 1);
             ItemMeta nextMeta = next.getItemMeta();
             nextMeta.setDisplayName(ChatUtils.chat("&6Next Page >>"));
             next.setItemMeta(nextMeta);
-            NBT nbt2 = NBT.get(next);
-            nbt2.setInt("locx", Integer.valueOf((int)chunkHopper.getLocation().getX()));
-            nbt2.setInt("locy", Integer.valueOf((int)chunkHopper.getLocation().getY()));
-            nbt2.setInt("locz", Integer.valueOf((int)chunkHopper.getLocation().getZ()));
-            nbt2.setInt("page", Integer.valueOf(o));
-            nbt2.setString("world", chunkHopper.getLocation().getWorld().getName());
+            next = addCoordNBT(next, chunkHopper.getLocation());
 
             ItemStack addItem = new ItemStack(UMaterial.HOPPER.getMaterial(), 1);
             ItemMeta addItemMeta = next.getItemMeta();
             addItemMeta.setDisplayName(ChatUtils.chat("&aAdd Item"));
             addItem.setItemMeta(addItemMeta);
-            NBT nbt3 = NBT.get(addItem);
-            nbt3.setInt("locx", Integer.valueOf((int)chunkHopper.getLocation().getX()));
-            nbt3.setInt("locy", Integer.valueOf((int)chunkHopper.getLocation().getY()));
-            nbt3.setInt("locz", Integer.valueOf((int)chunkHopper.getLocation().getZ()));
-            nbt3.setInt("page", Integer.valueOf(o));
-            nbt3.setString("world", chunkHopper.getLocation().getWorld().getName());
+            addItem = addCoordNBT(addItem, chunkHopper.getLocation());
 
-            gui.setItem(this.size, nbt1.apply(previous));
-            gui.setItem(this.size + 4, nbt3.apply(addItem));
-            gui.setItem(this.size + 8, nbt2.apply(next));
+            gui.setItem(this.size, previous);
+            gui.setItem(this.size + 4, addItem);
+            gui.setItem(this.size + 8, next);
 
-            ItemStack lightfillerItem = ItemBuilder.getItemStack(UMaterial.GRAY_STAINED_GLASS_PANE.getItemStack(), " ");
-            ItemStack darkFillerItem = ItemBuilder.getItemStack(UMaterial.BLACK_STAINED_GLASS_PANE.getItemStack(), " ");
-
-            int i = 0;
-
-            for (ItemStack itemStack : gui.getContents()) {
-                if (itemStack == null) {
-                    i++;
-                }
-            }
-            for (int j = 0; j < i; j++) {
-                gui.setItem(gui.firstEmpty(), (gui.firstEmpty() % 2 == 1) ? lightfillerItem : darkFillerItem);
-            }
             chunkHopper.getFilterInventories().add(gui);
         }
         int slot = 0;
@@ -152,14 +216,9 @@ public class GUIManager
                     meta.setLore(Arrays.asList(new String[]{ChatUtils.chat("&c&lDisabled"), ChatUtils.chat("&7Shift + Right Click to remove this item from the filter!")}));
                 }
                 itemStack.setItemMeta(meta);
-                NBT nbt = NBT.get(itemStack);
-                nbt.setInt("locx", Integer.valueOf((int) chunkHopper.getLocation().getX()));
-                nbt.setInt("locy", Integer.valueOf((int) chunkHopper.getLocation().getY()));
-                nbt.setInt("locz", Integer.valueOf((int) chunkHopper.getLocation().getZ()));
-                nbt.setInt("page", Integer.valueOf(slot / this.size));
-                nbt.setString("world", chunkHopper.getLocation().getWorld().getName());
+                itemStack = addCoordNBT(itemStack, chunkHopper.getLocation());
 
-                (chunkHopper.getFilterInventories().get(slot / this.size)).setItem(slot % this.size, nbt.apply(itemStack));
+                (chunkHopper.getFilterInventories().get(slot / this.size)).setItem(slot % this.size, itemStack);
                 slot++;
             }
         }
@@ -172,19 +231,6 @@ public class GUIManager
         Inventory gui = Bukkit.createInventory(player, this.size + 9,
                 ChatColor.translateAlternateColorCodes('&', "&8&nClick To Add Item To Filter"));
 
-        ItemStack lightfillerItem = ItemBuilder.getItemStack(UMaterial.GRAY_STAINED_GLASS_PANE.getItemStack(), " ");
-        ItemStack darkFillerItem = ItemBuilder.getItemStack(UMaterial.BLACK_STAINED_GLASS_PANE.getItemStack(), " ");
-
-        int i = 0;
-
-        for (ItemStack itemStack : gui.getContents()) {
-            if (itemStack == null) {
-                i++;
-            }
-        }
-        for (int j = 0; j < i; j++) {
-            gui.setItem(gui.firstEmpty(), (gui.firstEmpty() % 2 == 1) ? lightfillerItem : darkFillerItem);
-        }
         chunkHopper.getFilterInventories().add(gui);
 
         int slot = 0;
@@ -201,13 +247,8 @@ public class GUIManager
                     ItemMeta meta = itemStack.getItemMeta();
                     meta.setLore(Arrays.asList(new String[]{ChatUtils.chat("&3&l[!] &bClick to Add Item To the Filter!")}));
                     itemStack.setItemMeta(meta);
-
-                    NBT nbt = NBT.get(itemStack);
-                    nbt.setInt("locx", Integer.valueOf((int) chunkHopper.getLocation().getX()));
-                    nbt.setInt("locy", Integer.valueOf((int) chunkHopper.getLocation().getY()));
-                    nbt.setInt("locz", Integer.valueOf((int) chunkHopper.getLocation().getZ()));
-                    nbt.setString("world", chunkHopper.getLocation().getWorld().getName());
-                    gui.setItem(slot, nbt.apply(itemStack));
+                    itemStack = addCoordNBT(itemStack, chunkHopper.getLocation());
+                    gui.setItem(slot, itemStack);
                     slot++;
                 }
             }

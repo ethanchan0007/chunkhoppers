@@ -1,11 +1,14 @@
 package net.chunkhopper.src.utils;
 
+import net.chunkhopper.src.Main;
 import net.chunkhopper.src.nbt.NBT;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -85,6 +88,36 @@ public class ItemBuilder {
         NBT nbt = NBT.get(itemStack);
         nbt.setInt(NBTname, value);
         return nbt.apply(itemStack);
+    }
+
+    public static ItemStack getHopperStack(int amount, int level, int invSize) {
+        NBT nbt;
+
+        List<String> lore = Arrays.asList(ChatUtils.chat("&fThis hopper will collect all items that"),
+                ChatUtils.chat("&fdrop in its chunk!"),
+                "",
+                ChatColor.WHITE + "It also stores " + ChatColor.AQUA + "54 stacks",
+                ChatColor.WHITE + "and transfers " + ChatColor.AQUA + (level*9) + " stacks per second");
+
+        ItemStack retrohopper = ItemBuilder.getItemStack(Material.HOPPER, amount, (short) 0, Main.name, lore);
+
+        nbt = NBT.get(retrohopper);
+        nbt.setBoolean("retrohopper", true);
+        nbt.setInt("Level", level);
+        nbt.setInt("invSize", invSize);
+
+        return nbt.apply(retrohopper);
+    }
+
+
+
+    public static boolean isRetrohopper(ItemStack item)
+    {
+        if (item == null || item.getType() == Material.AIR || !item.hasItemMeta() ||
+                !item.getItemMeta().hasDisplayName() || !item.getItemMeta().hasLore() || NBT.get(item) == null
+        || !NBT.get(item).getString("retrohopper").equals(String.valueOf(true)))
+            return false;
+        return true;
     }
 
 }

@@ -14,9 +14,12 @@ import org.bukkit.Location;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TimerTask;
 import java.util.logging.Logger;
 
@@ -30,14 +33,21 @@ public class Main extends JavaPlugin {
 
     public void onEnable() {
         plugin = this;
+
         logger = getLogger();
+        new BukkitRunnable() {
 
-        dataHandler.retrieveData();
-        loadInventories();
-        loadEvents();
-        loadCommands();
+            @Override
+            public void run() {
 
-        getLogger().info("Chunk Hopper enabled");
+                dataHandler.retrieveData();
+                loadInventories();
+                loadEvents();
+                loadCommands();
+
+                getLogger().info("Chunk Hopper enabled");
+            }
+        }.runTaskLater(this, 1l);
     }
 
     public void loadInventories() {
@@ -59,21 +69,34 @@ public class Main extends JavaPlugin {
                 c.printStackTrace();
                 return;
             }
-            for (String s : hoppers.keySet()) {
-                String[] loc = s.split(":");
-                Inventory inventory = Bukkit.createInventory(null, 54, name);
-                ItemStack[] stack = new ItemStack[hoppers.get(s).length];
-                for (int i = 0; i < stack.length; i++) {
-                    if (hoppers.get(s)[i] == null) stack[i] = null;
-                    else stack[i] = hoppers.get(s)[i].toItemStack();
-                }
-                inventory.setContents(stack);
+            for (String line : hoppers.keySet()) {
+                List<Inventory> inventoryList = new ArrayList<>();
+                // get backpack type of uuid
+                String uuid = line.substring(0,36);
+                int num = Integer.parseInt(line.substring(37));
 
+                ChunkHopper chunkHopper = dataHandler.getHopperFromUUID(uuid);
 
-                Location location = new Location(Bukkit.getWorld(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]), Double.parseDouble(loc[3]));
-                if (MiscUtils.getInstance().isUsedLocation(location)) {
-                    ChunkHopper chunkhopper = MiscUtils.getInstance().getHopperFromLocation(location);
-                    chunkhopper.setInventory(inventory);
+                if (chunkHopper != null) {
+                    Inventory inventory = Bukkit.createInventory(null, 54, name);
+                    ItemStack[] stack = new ItemStack[hoppers.get(line).length];
+                    for (int i = 0; i < stack.length; i++) {
+                        if (hoppers.get(line)[i] == null) stack[i] = null;
+                        else stack[i] = hoppers.get(line)[i].toItemStack();
+                    }
+                    inventory.setContents(stack);
+
+                    inventoryList = chunkHopper.getInventories();
+
+                    while (inventoryList.size() < num + 1)
+                    {
+                        inventoryList.add(Bukkit.createInventory(null, 54, Main.name));
+                    }
+
+                    inventoryList.set(num, inventory);
+
+                    chunkHopper.setInventories(inventoryList);
+
                 }
             }
             getLogger().info("Got " + dataHandler.getHoppers().size() + " hoppers!");
@@ -108,19 +131,22 @@ public class Main extends JavaPlugin {
             HashMap<String, SerializableItemStack[]> hoppers = new HashMap();
             for (ChunkHopper chunkhopper : dataHandler.getHoppers()) {
                 Location loc = chunkhopper.getLocation();
-                if (chunkhopper.getInventory() != null) {
-                    SerializableItemStack[] stacks = new SerializableItemStack[chunkhopper.getInventory().getContents().length];
-                    for (int i = 0; i < chunkhopper.getInventory().getContents().length; i++) {
-                        if (chunkhopper.getInventory().getContents()[i] == null) {
-                            stacks[i] = null;
-                        } else {
-                            stacks[i] = new SerializableItemStack(chunkhopper.getInventory().getContents()[i]);
+                for (Inventory inv : chunkhopper.getInventories()) {
+                    String id = new StringBuilder(chunkhopper.getID() + ":" + chunkhopper.getInventories().indexOf(inv)).toString();
+                    SerializableItemStack[] stacks;
+                    if (inv != null) {
+                        stacks = new SerializableItemStack[inv.getContents().length];
+                        for (int i = 0; i < inv.getContents().length; i++) {
+                            if (inv.getContents()[i] == null) {
+                                stacks[i] = null;
+                            } else {
+                                stacks[i] = new SerializableItemStack(inv.getContents()[i]);
+                            }
                         }
+                    } else {
+                        stacks = new SerializableItemStack[inv.getContents().length];
                     }
-                    hoppers.put(loc.getWorld().getName() + ":" + loc.getX() + ":" + loc.getY() + ":" + loc.getZ(), stacks);
-                } else {
-                    SerializableItemStack[] stacks = new SerializableItemStack[chunkhopper.getInventory().getContents().length];
-                    hoppers.put(loc.getWorld().getName() + ":" + loc.getX() + ":" + loc.getY() + ":" + loc.getZ(), stacks);
+                    hoppers.put(id, stacks);
                 }
 
             }

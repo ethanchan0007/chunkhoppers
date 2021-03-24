@@ -1,0 +1,55 @@
+messages:
+  no-permission: "&cYou do not have permission to use this command!"
+  hopper-already-in-chunk: "&cOnly one retrohopper is allowed per chunk!"
+  remove-hopper: "&bYou removed a retrohopper!"
+  place-hopper: "&bYou placed a retrohopper!"
+
+placeholders:
+  hopper-name: "&3&nRetroHopper"
+  enabled: "&aEnabled"
+  disabled: "&cDisabled"
+
+invItems:
+  fills:
+    material: STAINED_GLASS_PANE
+    name: '&r'
+    lore:
+      - '&c&lPage: <page>'
+    data: 7
+    amount: 1
+  buttons:
+    back:
+      material: ARROW
+      name: '&rBack'
+      lore:
+        - '&c&lPage: <page>'
+      data: 0
+      amount: 1
+    next:
+      material: ARROW
+      name: '&rNext'
+      lore:
+        - '&c&lPage: <page>'
+      data: 0
+      amount: 1
+
+chunkhopper:
+  '1':
+    size: 45
+    stacks-to-transfer: 9
+    upgrades: []
+  '2':
+    size: 90
+    stacks-to-transfer: 18
+    upgrades: []
+  '3':
+    size: 135
+    stacks-to-transfer: 27
+    upgrades:
+      - CONDENSE
+  '4':
+    size: 180
+    stacks-to-transfer: 45
+    upgrades:
+      - CONDENSE
+      - SMELT

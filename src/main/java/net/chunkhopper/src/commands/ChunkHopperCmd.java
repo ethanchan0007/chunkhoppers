@@ -3,6 +3,7 @@ package net.chunkhopper.src.commands;
 import net.chunkhopper.src.Main;
 import net.chunkhopper.src.nbt.NBT;
 import net.chunkhopper.src.utils.ChatUtils;
+import net.chunkhopper.src.utils.ItemBuilder;
 import net.chunkhopper.src.utils.MiscUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,7 +35,7 @@ public class ChunkHopperCmd
                         amount = 1;
                     }
                 }
-                target.getInventory().addItem(getHopperStack(amount, level));
+                target.getInventory().addItem(ItemBuilder.getHopperStack(amount, level, 9));
                 sender.sendMessage(
                         ChatUtils.chat("&3&l[!] &bYou gave " + target.getName() + " " + amount + "x &bretrohoppers!"));
                 target.sendMessage(
@@ -67,37 +68,6 @@ public class ChunkHopperCmd
             sender.sendMessage(ChatUtils.chat("&c&l[!] &cUsage: /hopper give [player] [amount]"));
         }
         return true;
-    }
-
-    public static ItemStack getHopperStack(int amount, int level) {
-        NBT nbt;
-
-        ItemStack arcHopper = new ItemStack(Material.HOPPER);
-        ItemMeta meta = arcHopper.getItemMeta();
-        meta.setDisplayName(Main.name);
-        meta.setLore(Arrays.asList(ChatUtils.chat("&fThis hopper will collect all items that"), ChatUtils.chat("&fdrop in its chunk!"), "", ChatColor.WHITE + "It also stores " + ChatColor.AQUA + "54 stacks", ChatColor.WHITE + "and transfers " + ChatColor.AQUA + (level*9) + " stacks per second"));
-        arcHopper.setItemMeta(meta);
-        arcHopper.setAmount(amount);
-
-        nbt = NBT.get(arcHopper);
-        nbt.setInt("Level", level);
-
-        arcHopper = nbt.apply(arcHopper);
-
-        return arcHopper;
-    }
-
-
-
-    public static boolean isRetrohopper(ItemStack item)
-    {
-        if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() || !item.getItemMeta().hasLore()) return false;
-        List<String> lore = item.getItemMeta().getLore();
-        for (String line : lore)
-        {
-            if (line.equals(ChatUtils.chat("&fThis hopper will collect all items that"))) return true;
-        }
-        return false;
     }
 }
 

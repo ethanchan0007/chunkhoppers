@@ -1,5 +1,6 @@
 package net.chunkhopper.src.listener;
 
+import com.bgsoftware.superiorskyblock.api.SuperiorSkyblockAPI;
 import net.chunkhopper.src.Main;
 import net.chunkhopper.src.commands.Retrochips;
 import net.chunkhopper.src.gui.GUIManager;
@@ -40,8 +41,11 @@ public class HopperInteract
         Block block = event.getClickedBlock();
         ItemStack item = player.getItemInHand();
         boolean change = false;
+        if (player == null || block == null || SuperiorSkyblockAPI.getPlayer(player).getIsland() == null || SuperiorSkyblockAPI.getIslandAt(block.getLocation()) == null) return;
+        if (!(player.isOp() || (SuperiorSkyblockAPI.getPlayer(player).getIsland().equals(SuperiorSkyblockAPI.getIslandAt(block.getLocation()))))) return;
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && player.isSneaking() && !player.getItemInHand().getType().equals(Material.HOPPER) && MiscUtils.getInstance().isUsedLocation(block.getLocation())) {
             ChunkHopper chunkhopper = MiscUtils.getInstance().getHopperFromLocation(block.getLocation());
+
             if (Retrochips.isRetrochip(item)) {
 
                 if (chunkhopper.getLevel() < 3) {
@@ -70,6 +74,7 @@ public class HopperInteract
                 event.setCancelled(true);
                 GUIManager.getInstance().openMainInventory(player, chunkhopper.getLocation());
             }
+
         }
     }
 
@@ -80,14 +85,14 @@ public class HopperInteract
             ChunkHopper chunkhopper = MiscUtils.getInstance().getHopperFromLocation(event.getInventory().getLocation());
             chunkhopper.setTransferring(true);
             chunkhopper.hopperTimer(this.dataHandler);
-            event.getPlayer().openInventory(chunkhopper.getInventory());
+            event.getPlayer().openInventory(chunkhopper.getInventories().get(0));
         } else if (event.getInventory().getLocation() != null && event.getView().getTitle().equalsIgnoreCase(Main.name) && !MiscUtils.getInstance().isUsedLocation(event.getInventory().getLocation())) {
             event.setCancelled(true);
-            ChunkHopper chunkhopper = (new ChunkHopper(event.getInventory().getLocation(), Bukkit.createInventory(null, 54, Main.name), MiscUtils.itemFilterList(), UUID.randomUUID().toString(), 1));
+            ChunkHopper chunkhopper = (new ChunkHopper(event.getInventory().getLocation(), MiscUtils.itemFilterList(), UUID.randomUUID().toString(), 1, 9));
             dataHandler.getHoppers().add(chunkhopper);
             chunkhopper.setTransferring(true);
             chunkhopper.hopperTimer(this.dataHandler);
-            event.getPlayer().openInventory(chunkhopper.getInventory());
+            event.getPlayer().openInventory(chunkhopper.getInventories().get(0));
         }
     }
 
@@ -106,25 +111,46 @@ public class HopperInteract
                         if (event.getView().getTitle().equals(ChatColor.translateAlternateColorCodes('&', "&8&nRetroHopper Information"))) {
                             final Player player = (Player) event.getWhoClicked();
                             Location location = new Location(Bukkit.getWorld(nbt.getString("world")), nbt.getInt("locx").intValue(), nbt.getInt("locy").intValue(), nbt.getInt("locz").intValue());
+                            ChunkHopper hopper = MiscUtils.getInstance().getHopperFromLocation(location);
+
                             if (item.getType() == UMaterial.CHEST.getMaterial()) {
-                                ChunkHopper hopper = MiscUtils.getInstance().getHopperFromLocation(location);
                                 GUIManager.getInstance().openItemFilterGUI(player, hopper, 0);
                             } else if (item.getType() == UMaterial.BARRIER.getMaterial()) {
-                                Chunk chunk = location.getChunk();
-                                Location corner1 = chunk.getBlock(0, 0, 0).getLocation();
-                                Location corner2 = chunk.getBlock(0, 0, 0).getLocation().add(16.0D, 255.0D, 16.0D);
-                                List<Location> particleLocList = MiscUtils.getInstance().getHollowCube(corner1, corner2);
-                                for (final Location particleLoc : particleLocList) {
-                                    (new BukkitRunnable() {
-                                        int i = 0;
-
-                                        public void run() {
-                                            player.getWorld().spawnParticle(Particle.BARRIER, particleLoc, 0, 1.0D, 0.001D, 0.0D, 1.0D);
-                                            if (this.i == 20) cancel();
-                                            this.i++;
-                                        }
-                                    }).runTaskTimer(Main.getPlugin(), 0L, 5L);
+                                MiscUtils.highlightChunk(location, player);
+                            } else if (item.getType() == UMaterial.IRON_BLOCK.getMaterial()) {
+                                if (!hopper.isCondensing()) {
+                                    hopper.setCondensing(true);
+                                    player.sendMessage(ChatUtils.chat("&aRetrohopper -> Condensing Ores"));
                                 }
+                                else {
+                                    hopper.setCondensing(false);
+                                    player.sendMessage(ChatUtils.chat("&cRetrohopper -> Not Condensing Ores"));
+                                }
+
+                                for (ChunkHopper r : this.dataHandler.getHoppers()) {
+                                    if (r.getLocation().equals(hopper.getLocation())) {
+                                        r.setItemFilterList(hopper.getItemFilterList());
+                                    }
+                                }
+                                this.dataHandler.saveData();
+                                GUIManager.getInstance().openMainInventory(player, hopper.getLocation());
+                            } else if (item.getType() == UMaterial.REDSTONE.getMaterial()) {
+                                if (!hopper.isParticleEnabled()) {
+                                    hopper.setParticleEnabled(true);
+                                    player.sendMessage(ChatUtils.chat("&aParticles Enabled!"));
+                                }
+                                else {
+                                    hopper.setParticleEnabled(false);
+                                    player.sendMessage(ChatUtils.chat("&cParticles Disabled!"));
+                                }
+
+                                for (ChunkHopper r : this.dataHandler.getHoppers()) {
+                                    if (r.getLocation().equals(hopper.getLocation())) {
+                                        r.setItemFilterList(hopper.getItemFilterList());
+                                    }
+                                }
+                                this.dataHandler.saveData();
+                                GUIManager.getInstance().openMainInventory(player, hopper.getLocation());
                             }
                         } else if (event.getView().getTopInventory().getTitle().equals(ChatColor.translateAlternateColorCodes('&', "&8&nRetroHopper Filter"))) {
                             int page = nbt.getInt("page").intValue();

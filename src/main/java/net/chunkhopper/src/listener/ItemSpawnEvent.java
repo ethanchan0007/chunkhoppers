@@ -31,11 +31,14 @@ public class ItemSpawnEvent implements Listener {
             int amount = item.getAmount();
             if (!chunkhopper.isChunkHopperInventoryFull() && !event.isCancelled()) {
                 for (ItemStack i : chunkhopper.getItemFilterList().keySet()) {
-                    if (i.getType() == item.getType() && chunkhopper.getItemFilterList().get(i).booleanValue() && i.getData().getData() == item.getData().getData()) {
-                        if (!MiscUtils.isInventoryFull(chunkhopper.getInventory())) {
+                    if (i.getType() == item.getType() && chunkhopper.getItemFilterList().get(i) && i.getData().getData() == item.getData().getData()) {
+                        if (!MiscUtils.areInventoriesFull(chunkhopper.getInventories())) {
                             chunkhopper.addItemToChunkHopper(item);
                         }
-                        event.getEntity().getLocation().getWorld().playEffect(itemLoc, Effect.SMOKE, 1);
+                        if (!chunkhopper.isParticleEnabled())
+                            event.getEntity().getLocation().getWorld().playEffect(itemLoc, Effect.SMOKE, 1);
+                        else
+                            MiscUtils.drawParticleLine(event.getEntity().getLocation().clone(), chunkhopper.getCenterLocation().clone());
                         event.getEntity().remove();
 
                         if (!chunkhopper.getTransferring()) {

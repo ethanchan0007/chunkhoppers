@@ -6,7 +6,7 @@
 
     <groupId>net.chunkhopper</groupId>
     <artifactId>ChunkHopper</artifactId>
-    <version>1.6</version>
+    <version>1.7</version>
     <build>
         <plugins>
             <plugin>
@@ -42,13 +42,6 @@
             <groupId>com.github.OmerBenGera</groupId>
             <artifactId>SuperiorSkyblockAPI</artifactId>
             <version>b9</version>
-        </dependency>
-        <dependency>
-            <groupId>me.swanis</groupId>
-            <artifactId>mobcoins</artifactId>
-            <version>1.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/jars/UltimateStacker-1.11.17.jar</systemPath>
         </dependency>
     </dependencies>
 
